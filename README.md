@@ -13,11 +13,9 @@ This application is written in *PyQT5*, and has been verified to be working with
 
 ### Installation
 
-1. On Debian/Ubuntu environments, make sure to install these packages:
-```python python-dev python-virtualenv qt5-default libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev libssl-dev virt-viewer```
+1. On Debian/Ubuntu environments, make sure to install these packages: ```python python-dev python-virtualenv qt5-default libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev libssl-dev virt-viewer```
 
-    On RHEL environments, make sure to install these packages: ```python python-devel
-python-virtualenv python-pip gcc gcc-c++ qt5-qtbase qt5-qtbase-devel libcurl-devel libxml2 libxml2-devel libxslt-devel openssl-devel virt-viewer```
+   On RHEL environments, make sure to install these packages: ```python python-devel python-virtualenv python-pip gcc gcc-c++ qt5-qtbase qt5-qtbase-devel libcurl-devel libxml2 libxml2-devel libxslt-devel openssl-devel virt-viewer```
 
 2. Create the project directory and create a *virtualenv* inside:
    ```
@@ -26,7 +24,7 @@ python-virtualenv python-pip gcc gcc-c++ qt5-qtbase qt5-qtbase-devel libcurl-dev
    virtualenv --always-copy venv
    . venv/bin/activate
    ```
-3. You have to download the SIP and PyQT5 projects and install them manually. Starting with SIP, [download] the *tar.gz* file to your ~/ovirt_client directory, uncompress it and compile it.
+3. You have to download the SIP and PyQT5 projects and install them manually. Starting with SIP, [download](https://sourceforge.net/projects/pyqt/files/sip/) the *tar.gz* file to your ~/ovirt_client directory, uncompress it and compile it.
    ```
    tar zxvf sip-X.X.X.tar.gz
    cd sip-X.X.X
@@ -34,7 +32,7 @@ python-virtualenv python-pip gcc gcc-c++ qt5-qtbase qt5-qtbase-devel libcurl-dev
    make
    make install
    ```
-4. Let's do the same with [PyQT5].
+4. Let's do the same with [PyQT5](https://www.riverbankcomputing.com/software/pyqt/download5).
    ```
    tar zxvf PyQt-gpl-X.X.tar.gz
    cd PyQt-gpl-X.X
@@ -63,7 +61,8 @@ Some environments seem to have their own peculiarities and installing SIP or PyQ
 
 This happens because you're working inside a *virtualenv*, probably with an unprivileged user and *make install* will still try to copy files inside `/usr/local/...` instead. You'll see something like this:
 
-```make[1]: entering directory « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/sipgen »
+```
+make[1]: entering directory « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/sipgen »
 cp -f sip /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/bin/sip
 make[1]: leaving directory « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/sipgen »
 make[1]: entering « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/siplib »
@@ -71,9 +70,9 @@ cp -f sip.so /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/lib/p
 strip /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/lib/python2.7/site-packages/sip.so
 cp -f /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/siplib/sip.h /usr/local/python/include/python2.7/sip.h
 cp: cannot create regular file « /usr/local/python/include/python2.7/sip.h »: Permission denied
-make[1]: *** [install] Error 1
+make[1]:  [install] Error 1
 make[1]: leaving directory « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/siplib »
-make: *** [install] Error 2
+make:  [install] Error 2
 ```
 
 To solve it, run `python configure.py` specifying the include dir (i.e., your virtualenv's include dir where files should be installed.
@@ -115,6 +114,3 @@ The beggining of this section is marked with the `[app]` line and references som
 ## Current version
 
 This version is 1.0.0. You can find a CHANGELOG file inside your directory to see news.
-
-   [download]: <https://sourceforge.net/projects/pyqt/files/sip/>
-   [PyQT5]: <https://www.riverbankcomputing.com/software/pyqt/download5>
