@@ -24,6 +24,7 @@ This application is written in *PyQT5*, and has been verified to be working with
    virtualenv --always-copy venv
    . venv/bin/activate
    ```
+
 3. You have to download the SIP and PyQT5 projects and install them manually. Starting with SIP, [download](https://sourceforge.net/projects/pyqt/files/sip/) the *tar.gz* file to your ~/ovirt_client directory, uncompress it and compile it.
    ```
    tar zxvf sip-X.X.X.tar.gz
@@ -32,6 +33,7 @@ This application is written in *PyQT5*, and has been verified to be working with
    make
    make install
    ```
+
 4. Let's do the same with [PyQT5](https://www.riverbankcomputing.com/software/pyqt/download5).
    ```
    tar zxvf PyQt-gpl-X.X.tar.gz
@@ -40,10 +42,12 @@ This application is written in *PyQT5*, and has been verified to be working with
    make
    make install
    ```
+
 5. Clone the oVirt-desktop-client project:
    ```
    git clone https://github.com/nkovacne/ovirt-desktop-client.git
    ```
+
 6. Install the Python requisites with pip:
    ```
    pip install -r ovirt-desktop-client/requisites.txt
