@@ -14,14 +14,12 @@
 # This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 # WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-import sys
 import gettext
 import os
 import ConfigParser
-from time import sleep
 from os.path import isfile
 from globalconf import conf
-from PyQt5.QtWidgets import QProgressBar, QPushButton, QDesktopWidget, QDialog, QLabel, QLineEdit, QGridLayout, QCheckBox, QWidget, QMessageBox
+from PyQt5.QtWidgets import QProgressBar, QPushButton, QDesktopWidget, QDialog, QLabel, QLineEdit, QGridLayout, QCheckBox, QMessageBox
 from PyQt5.QtGui import QImage, QPixmap 
 from PyQt5.QtCore import QBasicTimer, Qt
 from ovirtsdk.api import API

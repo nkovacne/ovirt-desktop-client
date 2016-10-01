@@ -13,9 +13,15 @@ This application is written in *PyQT5*, and has been verified to be working with
 
 ### Installation
 
-1. On Debian/Ubuntu environments, make sure to install these packages: ```python python-dev python-virtualenv qt5-default libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev libssl-dev virt-viewer```
+1. On Debian/Ubuntu environments, make sure to install these packages: 
+   ```
+   python python-dev python-virtualenv qt5-default libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev libssl-dev virt-viewer
+   ```
 
-   On RHEL environments, make sure to install these packages: ```python python-devel python-virtualenv python-pip gcc gcc-c++ qt5-qtbase qt5-qtbase-devel libcurl-devel libxml2 libxml2-devel libxslt-devel openssl-devel virt-viewer```
+   On RHEL environments, make sure to install these packages:
+   ```
+   python python-devel python-virtualenv python-pip gcc gcc-c++ qt5-qtbase qt5-qtbase-devel libcurl-devel libxml2 libxml2-devel libxslt-devel openssl-devel virt-viewer
+   ```
 
 2. Create the project directory and create a *virtualenv* inside:
    ```
@@ -79,7 +85,7 @@ make[1]: leaving directory « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10
 make:  [install] Error 2
 ```
 
-To solve it, run `python configure.py` specifying the include dir (i.e., your virtualenv's include dir where files should be installed.
+To solve it, run `python configure.py` specifying the include dir (i.e., your virtualenv's include dir where files should be installed).
 
    ```
    python configure.py --incdir=../venv/include/python2.7
@@ -117,4 +123,4 @@ The beggining of this section is marked with the `[app]` line and references som
 
 ## Current version
 
-This version is 1.0.0. You can find a CHANGELOG file inside your directory to see news.
+Current stable version is 1.0.1. You can find a CHANGELOG file inside your directory to see news.
