@@ -25,6 +25,7 @@ from xml.etree import cElementTree as ET
 from random import randint
 from os import system, remove
 from os.path import isfile
+from ssl import _create_unverified_context
 from globalconf import *
 from credentials import Credentials
 from about import About
@@ -286,7 +287,9 @@ class OvirtClient(QWidget):
         base64str = encodestring('%s:%s' % (conf.USERNAME + '@' + conf.CONFIG['ovirtdomain'], conf.PASSWORD)).replace('\n', '')
         req.add_header('Authorization', 'Basic ' + base64str)
         req.add_header('filter', 'true')
-        tickethash = urllib2.urlopen(req).read()
+
+        context = _create_unverified_context()
+        tickethash = urllib2.urlopen(req, context=context).read()
         xmlcontent = ET.fromstring(tickethash)
 
         ticket = None
@@ -321,7 +324,8 @@ class OvirtClient(QWidget):
         req.add_header('Accept', 'application/x-virt-viewer')
         req.add_header('filter', 'true')
 
-        contents = urllib2.urlopen(req).read()
+        context = _create_unverified_context()
+        contents = urllib2.urlopen(req, context=context).read()
         if conf.CONFIG['fullscreen'] == '1':
            contents = contents.replace('fullscreen=0', 'fullscreen=1')
         filename = '/tmp/viewer-' + str(randint(10000, 99999))
@@ -717,6 +721,13 @@ def checkConfig():
     except ConfigParser.NoOptionError:
         fullscreen = '0'
 
+    try:
+        allow_remember = config.get('app', 'allow_remember')
+        if allow_remember != '0' and allow_remember != '1':
+            allow_remember = '0'
+    except ConfigParser.NoOptionError:
+        allow_remember = '1'
+
     # Config OK, storing values
     conf.CONFIG['ovirturl'] = ovirturl
     conf.CONFIG['ovirtdomain'] = ovirtdomain
@@ -724,6 +735,7 @@ def checkConfig():
     conf.CONFIG['conntimeout'] = conntimeout
     conf.CONFIG['prefproto'] = prefproto
     conf.CONFIG['fullscreen'] = fullscreen
+    conf.CONFIG['allow_remember'] = allow_remember
 
     lang = gettext.translation(conf.CONFIG['applang'], localedir='lang', languages=[conf.CONFIG['applang']])
     return lang

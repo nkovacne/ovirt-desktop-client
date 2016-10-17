@@ -35,8 +35,9 @@ class CheckCreds(QDialog):
         QDialog.__init__(self, parent)
         self.uname = username
         self.pw = password
-        self.remember = remember
+        self.remember = False if conf.CONFIG['allow_remember'] == '0' else remember
         self.setModal(True)
+
         self.initUI()
 
     def initUI(self):
@@ -241,10 +242,14 @@ class Credentials(QDialog):
         grid.addWidget(lab_pw, 2, 1, 1, 1)                   # Password
         grid.addWidget(self.edit_pw, 2, 2, 1, 2)
 
-        grid.addWidget(self.remembercreds, 3, 1, 1, 3)       # Remember credentials
+        if conf.CONFIG['allow_remember'] == '1':
+            grid.addWidget(self.remembercreds, 3, 1, 1, 3)   # Remember credentials (only if the option is enabled)
 
-        grid.addWidget(okButton, 4, 1)                       # Buttons
-        grid.addWidget(cancelButton, 4, 2)
+            grid.addWidget(okButton, 4, 1)                   # Buttons
+            grid.addWidget(cancelButton, 4, 2)
+        else:
+            grid.addWidget(okButton, 3, 1)                   # Buttons
+            grid.addWidget(cancelButton, 3, 2)
         
         self.setLayout(grid) 
 
@@ -256,13 +261,18 @@ class Credentials(QDialog):
         # If credentials file exists, we'll recover username and password fields
         # and try to authenticate with them
         if isfile(conf.USERCREDSFILE):
-            config = ConfigParser.ConfigParser()
-            config.read(conf.USERCREDSFILE)
-            uname = config.get('credentials', 'username')
-            pw = config.get('credentials', 'password')
-            self.edit_username.setText(uname)
-            self.edit_pw.setText(pw)
-            self.check_creds()
+            # If credentials file exists and CONFIG['allow_remember'] is disabled, we remove the file
+            # as it make no sense keeping it
+            if conf.CONFIG['allow_remember'] == '0':
+                os.remove(conf.USERCREDSFILE)
+            else:
+                config = ConfigParser.ConfigParser()
+                config.read(conf.USERCREDSFILE)
+                uname = config.get('credentials', 'username')
+                pw = config.get('credentials', 'password')
+                self.edit_username.setText(uname)
+                self.edit_pw.setText(pw)
+                self.check_creds()
 
     def center(self):
         """

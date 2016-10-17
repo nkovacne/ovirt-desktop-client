@@ -1,7 +1,14 @@
+1.0.2
+-----
+* Forced the ovirt-engine-sdk-python version to 3.6.9 (4.0.X oVirt format is completely incompatible with 3.X.X versions)
+* Fixed some issues with self-signed certificates (also affects LetsEncrypt certificates for some reason)
+* Adeed the app->allow_remember configuration parameter, defining whether the "Remember credentials" checkbox is or not shown. Defaults 1 (allow remembering).
+* Added a TODOLIST
+
 1.0.1
 -----
-Some minor fixes
+* Some minor fixes
 
 1.0.0
 -----
-Initial version, feel free to report any bugs you may encounter.
+* Initial version, feel free to report any bugs you may encounter.

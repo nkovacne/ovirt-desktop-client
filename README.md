@@ -2,7 +2,7 @@
 
 ### Description
 
-This project is a simple oVirt-related desktop client. The application will communicate with oVirt via its API and provide a list of VMs about which the user has usage privileges, allowing two essential operations:
+This project is a simple oVirt-related desktop client. The application will communicate with oVirt via its Python API and provide a list of VMs about which the user has usage privileges, allowing two essential operations:
 
  1. _Manage power_: Users will be able to shutdown and start their machines.
  2. _Connect to the machine_: The application makes use of _virt-viewer_ to connect to the VM. Both VNC and SPICE protocols are supported.
@@ -38,6 +38,7 @@ This application is written in *PyQT5*, and has been verified to be working with
    python configure.py
    make
    make install
+   cd ..
    ```
 
 4. Let's do the same with [PyQT5](https://www.riverbankcomputing.com/software/pyqt/download5).
@@ -47,6 +48,7 @@ This application is written in *PyQT5*, and has been verified to be working with
    python configure.py
    make
    make install
+   cd ..
    ```
 
 5. Clone the oVirt-desktop-client project:
@@ -54,7 +56,7 @@ This application is written in *PyQT5*, and has been verified to be working with
    git clone https://github.com/nkovacne/ovirt-desktop-client.git
    ```
 
-6. Install the Python requisites with pip:
+6. Install the Python requisites with `pip`:
    ```
    pip install -r ovirt-desktop-client/requisites.txt
    ```
@@ -69,7 +71,7 @@ Some environments seem to have their own peculiarities and installing SIP or PyQ
 
 ##### SIP: Permission denied on make install
 
-This happens because you're working inside a *virtualenv*, probably with an unprivileged user and *make install* will still try to copy files inside `/usr/local/...` instead. You'll see something like this:
+This happens when you're working inside a *virtualenv*, probably with an unprivileged user and *make install* will still try to copy files inside `/usr/local/...` instead of your virtualenv. You'll see something like this:
 
 ```
 make[1]: entering directory « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/sipgen »
@@ -85,7 +87,7 @@ make[1]: leaving directory « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10
 make:  [install] Error 2
 ```
 
-To solve it, run `python configure.py` specifying the include dir (i.e., your virtualenv's include dir where files should be installed).
+To solve it, run `python configure.py` specifying the include dir (i.e., your virtualenv's include dir where files should actually be installed).
 
    ```
    python configure.py --incdir=../venv/include/python2.7
@@ -95,7 +97,7 @@ Then, run `make` and `make install` again.
 
 ##### PyQT5: Error: Make sure you have a working sip on your PATH or use the --sip argument to explicitly specify a working sip.
 
-This error shows up because the `configure.py` file is unable to find a valid SIP include directory. To solve it, simply specify it using the `--sip-incdir` option:
+This error shows up when the `configure.py` file is unable to find a valid SIP include directory. To solve it, simply force it specifying the `--sip-incdir` option:
 
    ```
    python configure.py --sip-incdir ../sip-X.X.X/siplib
@@ -103,24 +105,25 @@ This error shows up because the `configure.py` file is unable to find a valid SI
 
 ### Configuration
 
-To run the application, a file named `settings.conf` must exist in the same directory where the application resides. This file has 2 sections with a few parameters in each. You can find a `settings.conf.example` file inside the repository so you can base your configuration on it (don't forget to rename it to `settings.conf`).
+To run the application, a file named `settings.conf` must exist in the same directory where the application resides. This file contains 2 sections with a few parameters in each. You can find a `settings.conf.example` file inside the repository so you can base your configuration on it (don't forget to copy/rename it to `settings.conf`).
 
 #### ovirt section
 
-The beggining of this section is marked with the `[ovirt]` line and references some settings that are directly related to the oVirt infrastructure that you mean to connect to. It has only 2 parameters, and both are **mandatory**:
+The beggining of this section is marked with the `[ovirt]` line and references some settings that are directly related to the oVirt infrastructure that you mean to connect to. It only has 2 parameters, and both are **mandatory**:
 
- * **url**: You oVirt infrastructure API URL. If you're using oVirt version 3.6.x, URL should be somewhat like: https://myovirt.mydomain.com/api. If you're using oVirt version 4.0.x or greater, URL should be somewhat like: https://myovirt.mydomain.com/ovirt-engine/api
- * **domain**: The domain under which your users will authenticate. When you create an AAA authenticator (LDAP, Kerberos, ...), a domain name is created to match it. This value goes here, so users will authenticate as `username@domain` (Ex: LDAP).
+ * **url**: You oVirt infrastructure API URL. If you're using oVirt version 3.6.x, URL should be somewhat like: `https://myovirt.mydomain.com/api`. If you're using oVirt version 4.0.x or greater, URL should be somewhat like: `https://myovirt.mydomain.com/ovirt-engine/api`.
+ * **domain**: The domain under which your users will authenticate. When you create an AAA authenticator (LDAP, Kerberos, ...), a domain name is created to match it. This value goes here, so users will authenticate as `username@domain` (Ex: LDAP, MyCompany, ...). It's the 'Profile' field value when you're logging into the oVirt web-based API.
  
 #### app section
 
 The beggining of this section is marked with the `[app]` line and references some settings that are directly related to the oVirt desktop client behavior. All of them are **optional** but have some default values.
 
-* **lang**: Chooses the application language. Available languages are stored under the `lang` folder. If you don't see your language, you can translate it and send a push request so I can add it to the project. Default: en.
-* **connection_timeout**: Establishes the number of seconds to wait after sending a request to your oVirt infrastructure after which the request will be considered timeout. Default: 15
-* **preferred_protocol**: Some VMs have more than one graphics protocols enabled (i.e, VNC and SPICE at a time). These VMs allow choosing which one you prefer to use to open a console window. In case that the VM has only one protocol enabled, this will be used disregarding this parameter. Possible values: spice, vnc. Default: spice
+* **lang**: Chooses the application language. Available languages are stored under the `lang` folder. If you don't see your language, you can translate it and send a push request so I can merge it into the project. Default: en.
+* **connection_timeout**: Establishes the number of seconds to wait after sending a request to your oVirt infrastructure after which the request will be considered timed out. Default: 15
+* **preferred_protocol**: Some VMs have more than one graphics protocols enabled (i.e, VNC and SPICE) at a time. These VMs allow choosing which one you prefer to use when opening a console window. In case that the VM only has one protocol enabled, this will be used disregarding this parameter. Possible values: spice, vnc. Default: spice
 * **fullscreen**: Enables opening the console window as fullscreen or the default size. Possible values: 1 (full screen), 0 (default size). Default: 0
+* **allow_remember**: Defines whether show or not the "Remember credentials" checkbox. Some environments might prefer not enabling it (for example, thin-client fashioned terminals). Possible values: 1 (enable the remembering credentials checkbox), 0 (disable the remembering credentials checkbox). Default: 1
 
 ## Current version
 
-Current stable version is 1.0.1. You can find a CHANGELOG file inside your directory to see news.
+Current stable version is 1.0.2. You can find a CHANGELOG file inside your directory to see news.
