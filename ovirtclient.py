@@ -33,16 +33,17 @@ from version import VERSION
 from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMessageBox, QGridLayout, QLabel, QWidget, QProgressBar, QScrollArea, QVBoxLayout, QPushButton, QAction, QToolBar
 from PyQt5.QtGui import QImage, QPixmap, QIcon
 from PyQt5.QtCore import Qt, QObjectCleanupHandler, pyqtSignal
-from ovirtsdk.infrastructure.errors import ConnectionError
+from ovirtsdk.infrastructure.errors import ConnectionError, RequestError
 
 class VmData:
     """
-        A simple class whose objects will store (VMid, VMname, VMstatus) tuples
+        A simple class whose objects will store (VMid, VMname, VMstatus, VMtype) tuples
     """
 
     vmid = None
     vmname = None
     vmstatus = None
+    vmtype = None
 
 class OvirtClient(QWidget):
     """
@@ -196,14 +197,16 @@ class OvirtClient(QWidget):
 
         if vmstatus == 'up':
             hrstatus = _('up')
-        if vmstatus == 'down':
+        elif vmstatus == 'down':
             hrstatus = _('down')
-        if vmstatus == 'powering_down':
+        elif vmstatus == 'powering_down':
             hrstatus = _('powering_down')
-        if vmstatus == 'wait_for_launch':
+        elif vmstatus == 'wait_for_launch':
             hrstatus = _('wait_for_launch')
-        if vmstatus == 'powering_up':
+        elif vmstatus == 'powering_up':
             hrstatus = _('powering_up')
+        else:
+            hrstatus = 'unknown'
         return hrstatus
 
     def toggle_vm_action(self, vmstatus):
@@ -264,11 +267,17 @@ class OvirtClient(QWidget):
                 quit()
 
             if curvmstatus == 'up':
-                vm.shutdown()
-                QMessageBox.information(None, _('success'), _('shutting_down_vm'))
+                try:
+                    vm.shutdown()
+                    QMessageBox.information(None, _('success'), _('shutting_down_vm'))
+                except RequestError:
+                    QMessageBox.warning(None, _('warning'), _('vm_in_unchangeable_status'))
             if curvmstatus == 'down':
-                vm.start()
-                QMessageBox.information(None, _('success'), _('powering_up_vm'))
+                try:
+                    vm.start()
+                    QMessageBox.information(None, _('success'), _('powering_up_vm'))
+                except RequestError:
+                    QMessageBox.warning(None, _('warning'), _('vm_in_unchangeable_status'))
 
     def get_viewer_ticket(self, vmid):
         """
@@ -369,6 +378,29 @@ class OvirtClient(QWidget):
             return
 
         self.connect2machine(vmid, vmname)
+    
+    def acquire_vm_from_vmpool(self, rowid):
+        """
+            Description: A machine will be acquired by a user if they click on the icon of a VmPool
+            Arguments: The row id that has been clicked. This relationship is stored using the VmData class.
+            Returns: Nothing
+        """
+
+        vmtype = self.vmdata[rowid].vmtype
+
+        if vmtype != 'vmpool':
+            try:
+                vmp = conf.OVIRTCONN.vmpools.get(id=self.vmdata[rowid].vmid)
+                vmp.allocatevm()
+                QMessageBox.information(None, _('info'), _('acquiring_vm_from_pool'))
+                self.refresh_grid()
+            except ConnectionError:
+                QMessageBox.critical(None, _('error'), _('unexpected_connection_drop'))
+                quit()
+            except RequestError:
+                QMessageBox.critical(None, _('error'), _('cannot_attach_vm_to_user'))
+        else:
+            QMessageBox.warning(None, _('warning'), _('object_is_not_a_vmpool'))
 
     def refresh_grid(self):
         """
@@ -405,6 +437,103 @@ class OvirtClient(QWidget):
             self.forgetCredsAction.setDisabled(True)
             QMessageBox.information(None, _('success'), _('creds_forgotten'))
 
+    def list_vmpools(self, row, delta, step, vmpools):
+        """
+            Description: Creates one row per VmPool that a user has access to.
+            Arguments: 1. The index of the first row to loop over.
+                       2. Delta step to sum to the progress bar.
+                       3. The current step of the progress bar
+                       4. The oVirt list of VmPools.
+            Returns: The final step of the progress bar
+        """
+
+        # For cleanness reasons, we'll firstly show available VmPools
+        for vm in vmpools:
+            vmname = vm.get_name()
+
+            # OS icon
+            ostype = 'vmpool'
+            imageOsicon = self.make_button(ostype, '<b>' + _('vmpool') + '</b>')
+
+            # Machine name
+            gridvmname = QLabel(vmname)
+            gridvmname.setStyleSheet(STANDARDCELLCSS)
+            gridvmname.setAlignment(Qt.AlignCenter)
+
+            # Acquire VM button
+            connect = self.make_button('grab', _('grab_vm_vmpool'));
+            connect.mousePressEvent = lambda x, r=row: self.acquire_vm_from_vmpool(r)
+
+            # Fill row with known info
+            self.grid.addWidget(imageOsicon, row, 0)
+            self.grid.addWidget(gridvmname, row, 1)
+            self.grid.addWidget(connect, row, 2)
+
+            # Store the correspondence between row number <-> VMPool data
+            vmd = VmData()
+            vmd.vmid = vm.get_id()
+            vmd.vmname = vm.get_name()
+            vmd.vmstatus = None
+            vmd.type = 'vmpool'
+            self.vmdata[row] = vmd
+
+            row += 1
+
+            step += delta
+            self.pbar.setValue(step)
+
+        return step
+
+    def list_vms(self, row, delta, step, vms):
+        """
+            Description: Creates one row per VM that a user has access to.
+            Arguments: 1. The index of the first row to loop over.
+                       2. Delta step to sum to the progress bar.
+                       3. The current step of the progress bar
+                       4. The oVirt list of VMs.
+            Returns: Nothing
+        """
+        # Now we'll show up the VMs
+        for vm in vms:
+            vmname = vm.get_name()
+            vmstatus = vm.get_status().get_state() 
+
+            # OS icon
+            ostype = self.get_os_icon(vm.get_os().get_type().lower())
+            imageOsicon = self.make_button(ostype, '<b>%s</b> OS' % (ostype.capitalize()))
+
+            # Machine name
+            gridvmname = QLabel(vmname)
+            gridvmname.setStyleSheet(STANDARDCELLCSS)
+            gridvmname.setAlignment(Qt.AlignCenter)
+
+            # Connect button
+            connect = self.make_button('connect', _('connect'));
+            connect.mousePressEvent = lambda x, r=row: self.connect(r)
+
+            # Status icon
+            curaction = self.current_vm_status(vmstatus)
+            imageSticon = self.make_button(vmstatus, self.toggle_action_text(vmstatus))
+            imageSticon.mousePressEvent = lambda x, r=row: self.change_status(r)
+
+            # Fill row with known info
+            self.grid.addWidget(imageOsicon, row, 0)
+            self.grid.addWidget(gridvmname, row, 1)
+            self.grid.addWidget(imageSticon, row, 2)
+            self.grid.addWidget(connect, row, 3)
+
+            # Store the correspondence between row number <-> VM data
+            vmd = VmData()
+            vmd.vmid = vm.get_id()
+            vmd.vmname = vm.get_name()
+            vmd.vmstatus = vmstatus
+            vmd.type = 'vm'
+            self.vmdata[row] = vmd
+
+            row += 1
+
+            step += delta
+            self.pbar.setValue(step)
 
     def load_vms(self):
         """
@@ -441,61 +570,26 @@ class OvirtClient(QWidget):
         try:
             # Try getting the VM list from oVirt
             vms = sorted(conf.OVIRTCONN.vms.list(), cmp=self.compare_vms)
+            vmpools = sorted(conf.OVIRTCONN.vmpools.list(), cmp=self.compare_vms)
         except ConnectionError:
             QMessageBox.critical(None, _('error'), _('unexpected_connection_drop'))
             quit()
 
         # Set the main widget height based on the number of VMs 
-        winheight = self.vm_based_resize(len(vms))
+        winheight = self.vm_based_resize(len(vms) + len(vmpools))
+        delta = int(100 / (len(vms) + len(vmpools)))
+
+        if vmpools:
+            step = self.list_vmpools(1, delta, step, vmpools)
         if vms:
-            delta = int(100 / len(vms))
-            row = 1
-            for vm in vms:
-                vmname = vm.get_name()
-                vmstatus = vm.get_status().get_state() 
-
-                # OS icon
-                ostype = self.get_os_icon(vm.get_os().get_type().lower())
-                imageOsicon = self.make_button(ostype, '<b>%s</b> OS' % (ostype.capitalize()))
-
-                # Machine name
-                gridvmname = QLabel(vmname)
-                gridvmname.setStyleSheet(STANDARDCELLCSS)
-                gridvmname.setAlignment(Qt.AlignCenter)
-
-                # Connect button
-                connect = self.make_button('connect', _('connect'));
-                connect.mousePressEvent = lambda x, r=row: self.connect(r)
-
-                # Status icon
-                curaction = self.current_vm_status(vmstatus)
-                imageSticon = self.make_button(vmstatus, self.toggle_action_text(vmstatus))
-                imageSticon.mousePressEvent = lambda x, r=row: self.change_status(r)
-
-                # Fill row with known info
-                self.grid.addWidget(imageOsicon, row, 0)
-                self.grid.addWidget(gridvmname, row, 1)
-                self.grid.addWidget(imageSticon, row, 2)
-                self.grid.addWidget(connect, row, 3)
-
-                # Store the correspondence between row number <-> VM data
-                vmd = VmData()
-                vmd.vmid = vm.get_id()
-                vmd.vmname = vm.get_name()
-                vmd.vmstatus = vmstatus
-                self.vmdata[row] = vmd
-
-                row += 1
-
-                step += delta
-                self.pbar.setValue(step)
-
+            self.list_vms(len(vmpools) + 1, delta, step, vms)
+            
         # Once loading has concluded, progress bar is dismissed and the layour set to the QGridLayout
         self.pbar.hide()
         QObjectCleanupHandler().add(self.layout())
 
         # First row is special: Number of VMs + Toolbar
-        total_machines = QLabel(_('total_machines') + ': ' + str(row - 1), self)
+        total_machines = QLabel(_('total_machines') + ': <font color="#AA8738">' + str(len(vms)) + '</font>, ' + _('total_vmpools') + ': <font color="#AA8738">' + str(len(vmpools)) + '</font>', self)
         self.grid.addWidget(total_machines, 0, 0, 1, 3, Qt.AlignCenter)
         self.generate_toolbar()
 

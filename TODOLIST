@@ -2,3 +2,5 @@
 * Encrypt somehow the oVirt credentials if stored.
 * Implement the "multitenant" mode (showing machines of multiple instances of oVirt into the same application).
 * Add support for VmPools
+* Implement an "autologout" event after being idle for some time
+* Strip HTML tags on unsuccessful auth message
