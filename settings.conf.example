@@ -7,3 +7,4 @@ lang = en
 connection_timeout = 15
 preferred_protocol = spice
 fullscreen = 0
+allow_remember = 1
