@@ -17,10 +17,11 @@
 import gettext
 import os
 import ConfigParser
+from re import sub
 from os.path import isfile
-from globalconf import conf
+from globalconf import conf, IMGDIR
 from PyQt5.QtWidgets import QProgressBar, QPushButton, QDesktopWidget, QDialog, QLabel, QLineEdit, QGridLayout, QCheckBox, QMessageBox
-from PyQt5.QtGui import QImage, QPixmap 
+from PyQt5.QtGui import QImage, QPixmap, QIcon
 from PyQt5.QtCore import QBasicTimer, Qt
 from ovirtsdk.api import API
 from ovirtsdk.infrastructure.errors import ConnectionError, RequestError
@@ -86,11 +87,11 @@ class CheckCreds(QDialog):
                 self.status.setText(_('authenticated_and_storing'))
                 self.step = 49
             except ConnectionError as e:
-                err.critical(self, _('error'), _('ovirt_connection_error') + ': ' + str(e))
+                err.critical(self, _('apptitle') + ': ' + _('error'), _('ovirt_connection_error') + ': ' + sub('<[^<]+?>', '', str(e)))
                 self.status.setText(_('error_while_authenticating'))
                 self.step = 100
             except RequestError as e:
-                err.critical(self, _('error'), _('ovirt_request_error') + ': ' + str(e))
+                err.critical(self, _('apptitle') + ': ' + _('error'), _('ovirt_request_error') + ': ' + sub('<[^<]+?>', '', str(e)))
                 self.status.setText(_('error_while_authenticating'))
                 self.step = 100
         
@@ -160,7 +161,7 @@ class Credentials(QDialog):
         pw = self.edit_pw.text()
 
         if not uname or not pw:
-            err.critical(self, _('error'), _('no_empty_creds'))
+            err.critical(self, _('apptitle') + ': ' + _('error'), _('no_empty_creds'))
         else:
             cc = CheckCreds(self, uname, pw, self.remembercreds.isChecked())
             cc.finished.connect(self.dismiss)
@@ -174,7 +175,7 @@ class Credentials(QDialog):
             Returns: Nothing, just quits if user confirms.
         """
 
-        cq = QMessageBox.question(self, _('confirm'), _('confirm_quit'), QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        cq = QMessageBox.question(self, _('apptitle') + ': ' + _('confirm'), _('confirm_quit'), QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if cq == QMessageBox.Yes:
             quit()
 
@@ -255,7 +256,8 @@ class Credentials(QDialog):
 
         self.setModal(True)
         self.center()
-        self.setWindowTitle(_('credentials'))
+        self.setWindowIcon(QIcon(IMGDIR + 'credentials.png'))
+        self.setWindowTitle(_('apptitle') + ': ' + _('credentials'))
         self.show()
 
         # If credentials file exists, we'll recover username and password fields

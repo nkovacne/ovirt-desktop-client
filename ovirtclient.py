@@ -19,7 +19,7 @@ import gettext
 import ConfigParser
 import urllib2
 import threading
-from time import sleep
+from time import sleep, time
 from base64 import encodestring
 from xml.etree import cElementTree as ET
 from random import randint
@@ -30,7 +30,7 @@ from globalconf import *
 from credentials import Credentials
 from about import About
 from version import VERSION
-from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMessageBox, QGridLayout, QLabel, QWidget, QProgressBar, QScrollArea, QVBoxLayout, QPushButton, QAction, QToolBar
+from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMessageBox, QGridLayout, QLabel, QWidget, QProgressBar, QScrollArea, QVBoxLayout, QAction, QToolBar
 from PyQt5.QtGui import QImage, QPixmap, QIcon
 from PyQt5.QtCore import Qt, QObjectCleanupHandler, pyqtSignal
 from ovirtsdk.infrastructure.errors import ConnectionError, RequestError
@@ -54,8 +54,13 @@ class OvirtClient(QWidget):
     """
 
     stopThread = False                              # Sentinel for stopping the Thread execution
+    autologoutWarn = False                          # Has the user been warned about autologout yet?
     updatesignal = pyqtSignal(int, str)             # Signal to update the status icons on status changes
     reloadsignal = pyqtSignal()                     # Signal to reload the main widget
+    warnlogoutsignal = pyqtSignal()                 # Signal to warn the user about an imminent autologout
+    logoutsignal = pyqtSignal(bool)                 # Signal to logout the current user and require credentials again
+    lastclick = int(time())                         # Timestamp of the last click. If a timeout policy is defined and
+                                                    # the time exceeds this value, an autologout will be performed.
 
     def __init__(self):
         QWidget.__init__(self)
@@ -252,32 +257,34 @@ class OvirtClient(QWidget):
 
         global conf
 
+        self.lastclick = int(time())         # Last click timestamp update
+
         curvmstatus = self.vmdata[rowid].vmstatus
         if curvmstatus != 'up' and curvmstatus != 'down':
-            QMessageBox.warning(None, _('warning'), _('vm_in_unchangeable_status'))
+            QMessageBox.warning(None, _('apptitle') + ': ' + _('warning'), _('vm_in_unchangeable_status'))
             return
 
-        reply = QMessageBox.question(None, _('confirm'), '%s <b>%s</b>. %s: <b>%s</b>.' % (_('current_vm_status'), self.current_vm_status(curvmstatus), _('confirm_vm_status_change'), self.toggle_vm_action(curvmstatus)), QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        reply = QMessageBox.question(None, _('apptitle') + ': ' + _('confirm'), '%s <b>%s</b>. %s: <b>%s</b>.' % (_('current_vm_status'), self.current_vm_status(curvmstatus), _('confirm_vm_status_change'), self.toggle_vm_action(curvmstatus)), QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
             try:
                 vm = conf.OVIRTCONN.vms.get(id=self.vmdata[rowid].vmid)
             except ConnectionError:
-                QMessageBox.critical(None, _('error'), _('unexpected_connection_drop'))
+                QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('unexpected_connection_drop'))
                 quit()
 
             if curvmstatus == 'up':
                 try:
                     vm.shutdown()
-                    QMessageBox.information(None, _('success'), _('shutting_down_vm'))
+                    QMessageBox.information(None, _('apptitle') + ': ' + _('success'), _('shutting_down_vm'))
                 except RequestError:
-                    QMessageBox.warning(None, _('warning'), _('vm_in_unchangeable_status'))
+                    QMessageBox.warning(None, _('apptitle') + ': ' + _('warning'), _('vm_in_unchangeable_status'))
             if curvmstatus == 'down':
                 try:
                     vm.start()
-                    QMessageBox.information(None, _('success'), _('powering_up_vm'))
+                    QMessageBox.information(None, _('apptitle') + ': ' + _('success'), _('powering_up_vm'))
                 except RequestError:
-                    QMessageBox.warning(None, _('warning'), _('vm_in_unchangeable_status'))
+                    QMessageBox.warning(None, _('apptitle') + ': ' + _('warning'), _('vm_in_unchangeable_status'))
 
     def get_viewer_ticket(self, vmid):
         """
@@ -357,9 +364,11 @@ class OvirtClient(QWidget):
         filename = self.store_vv_file(vmid, viewer_ticket)
 
         if filename:
+            self.stopThread = True    # Stop the background thread while a remote viewer session has been established
             system('/usr/bin/remote-viewer -t %s -f -- file://%s' % (vmname, filename))
+            self.restart_thread()
         else:
-            QMessageBox.critical(None, _('error'), _('no_viewer_file'))
+            QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('no_viewer_file'))
 
     def connect(self, rowid):
         """
@@ -368,13 +377,15 @@ class OvirtClient(QWidget):
             Arguments: The row id that has been clicked. This relationship is stored using the VmData class.
             Returns: Nothing
         """
+        
+        self.lastclick = int(time())         # Last click timestamp update
 
         vmid = self.vmdata[rowid].vmid
         vmname = self.vmdata[rowid].vmname
         vmstatus = self.vmdata[rowid].vmstatus
 
         if vmstatus != 'up':
-            QMessageBox.warning(None, _('warning'), _('cannot_connect_if_vm_not_up'))
+            QMessageBox.warning(None, _('apptitle') + ': ' + _('warning'), _('cannot_connect_if_vm_not_up'))
             return
 
         self.connect2machine(vmid, vmname)
@@ -385,22 +396,24 @@ class OvirtClient(QWidget):
             Arguments: The row id that has been clicked. This relationship is stored using the VmData class.
             Returns: Nothing
         """
+        
+        self.lastclick = int(time())         # Last click timestamp update
 
         vmtype = self.vmdata[rowid].vmtype
 
-        if vmtype != 'vmpool':
+        if vmtype == 'vmpool':
             try:
+                QMessageBox.information(None, _('apptitle') + ': ' + _('info'), _('acquiring_vm_from_pool'))
                 vmp = conf.OVIRTCONN.vmpools.get(id=self.vmdata[rowid].vmid)
                 vmp.allocatevm()
-                QMessageBox.information(None, _('info'), _('acquiring_vm_from_pool'))
                 self.refresh_grid()
             except ConnectionError:
-                QMessageBox.critical(None, _('error'), _('unexpected_connection_drop'))
+                QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('unexpected_connection_drop'))
                 quit()
             except RequestError:
-                QMessageBox.critical(None, _('error'), _('cannot_attach_vm_to_user'))
+                QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('cannot_attach_vm_to_user'))
         else:
-            QMessageBox.warning(None, _('warning'), _('object_is_not_a_vmpool'))
+            QMessageBox.warning(None, _('apptitle') + ': ' + _('warning'), _('object_is_not_a_vmpool'))
 
     def refresh_grid(self):
         """
@@ -409,7 +422,8 @@ class OvirtClient(QWidget):
             Arguments: None
             Returns: Nothing
         """
-
+        
+        self.lastclick = int(time())         # Last click timestamp update
         self.load_vms()
 
     def about(self):
@@ -418,6 +432,8 @@ class OvirtClient(QWidget):
             Arguments: None
             Returns: Nothing
         """
+        
+        self.lastclick = int(time())         # Last click timestamp update
         About()
     
     def forget_creds(self):
@@ -429,13 +445,15 @@ class OvirtClient(QWidget):
         """
 
         global conf
+        
+        self.lastclick = int(time())         # Last click timestamp update
 
-        reply = QMessageBox.question(None, _('confirm'), _('confirm_forget_creds'), QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        reply = QMessageBox.question(None, _('apptitle') + ': ' + _('confirm'), _('confirm_forget_creds'), QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
             remove(conf.USERCREDSFILE)
             self.forgetCredsAction.setDisabled(True)
-            QMessageBox.information(None, _('success'), _('creds_forgotten'))
+            QMessageBox.information(None, _('apptitle') + ': ' + _('success'), _('creds_forgotten'))
 
     def list_vmpools(self, row, delta, step, vmpools):
         """
@@ -474,7 +492,7 @@ class OvirtClient(QWidget):
             vmd.vmid = vm.get_id()
             vmd.vmname = vm.get_name()
             vmd.vmstatus = None
-            vmd.type = 'vmpool'
+            vmd.vmtype = 'vmpool'
             self.vmdata[row] = vmd
 
             row += 1
@@ -527,7 +545,7 @@ class OvirtClient(QWidget):
             vmd.vmid = vm.get_id()
             vmd.vmname = vm.get_name()
             vmd.vmstatus = vmstatus
-            vmd.type = 'vm'
+            vmd.vmtype = 'vm'
             self.vmdata[row] = vmd
 
             row += 1
@@ -572,7 +590,7 @@ class OvirtClient(QWidget):
             vms = sorted(conf.OVIRTCONN.vms.list(), cmp=self.compare_vms)
             vmpools = sorted(conf.OVIRTCONN.vmpools.list(), cmp=self.compare_vms)
         except ConnectionError:
-            QMessageBox.critical(None, _('error'), _('unexpected_connection_drop'))
+            QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('unexpected_connection_drop'))
             quit()
 
         # Set the main widget height based on the number of VMs 
@@ -584,7 +602,7 @@ class OvirtClient(QWidget):
         if vms:
             self.list_vms(len(vmpools) + 1, delta, step, vms)
             
-        # Once loading has concluded, progress bar is dismissed and the layour set to the QGridLayout
+        # Once loading has concluded, progress bar is dismissed and the layout set to the QGridLayout
         self.pbar.hide()
         QObjectCleanupHandler().add(self.layout())
 
@@ -620,18 +638,81 @@ class OvirtClient(QWidget):
         imageSticon.mousePressEvent = lambda x, r=i: self.change_status(r)
         self.grid.addWidget(imageSticon, i, 2)
 
+    def logoutWarn(self):
+        """
+            Description: This method is called if the warn_autologout setting has been set in the
+                         config. It will warn user to reset idle, otherwise an enforced logout will
+                         be performed by calling the logout() method.
+            Arguments: None
+            Returns: Nothing
+        """
+
+        self.autologoutwarnwin = QMessageBox(None)
+        self.autologoutwarnwin.setIcon(QMessageBox.Warning)
+
+        self.autologoutwarnwin.setText(_('auto_logout_warn'))
+        self.autologoutwarnwin.setWindowTitle(_('auto_logout_warn_title'))
+        self.autologoutwarnwin.setStandardButtons(QMessageBox.Ok)
+        self.autologoutwarnwin.buttonClicked.connect(self.autologoutwarn_accepted)
+        self.autologoutwarnwin.exec_()
+
+    def logout(self, reconnect=False):
+        """
+            Description: This method is invoked when the autologout parameter is set in the config
+                         and the idle time overreached. This should require authentication again.
+            Arguments: None
+            Returns: Nothing
+        """
+
+        if conf.OVIRTCONN:
+            try:
+                conf.OVIRTCONN.disconnect()
+            except ConnectionError:
+                pass
+
+        self.stopThread = True
+        conf.USERNAME = None
+        self.autologoutWarn = False
+
+        # Hide the layout so next user doesn't see the previous content
+        self.hide()
+
+        try:
+            self.autologoutwarnwin.accept()
+        except AttributeError:
+            # Usually when the notify_autologout setting has not been set
+            pass
+
+        # This will be called upon autologout events
+        if reconnect:
+            creds = Credentials(None)
+            creds.finished.connect(self.start_vmpane)
+            creds.exec_()
+
+    def autologoutwarn_accepted(self):
+        """
+            Description: Callback issued when the user accepts the message box warning
+                         about an imminent autologout event
+            Arguments: None
+            Returns: Nothing
+        """
+        self.lastclick = int(time())
+        self.autologoutWarn = False   # This will make the warning be shown next times as well
+
     def refresh_statuses(self):
         """
             Description: Background thread that will look for VM status changes and
                          send a signal to the main thread so the corresponding icons
                          are updated. Also, if there's a change in the number of VMs
-                         the user controls, the main Widgets will be reloaded.
+                         that the user controls, the main Widgets will be reloaded.
+                         It'll also check the autologout setting + act accordingly.
             Arguments: None
             Returns: Nothing (infinite loop)
         """
 
         global UPDATESLEEPINTERVAL
 
+        autologout = False
         while 1 and not self.stopThread:
             if conf.OVIRTCONN:
                 try:
@@ -658,9 +739,38 @@ class OvirtClient(QWidget):
                                 self.vmdata[i].vmstatus = curstatus
                                 self.updatesignal.emit(i, curstatus)
 
+                # If the autologout warning has not been shown yet and it's configured, we do so
+                if conf.CONFIG['autologout'] != 0 and conf.CONFIG['notify_autologout'] != 0 and not self.autologoutWarn and \
+                   (int(time() - self.lastclick) >= (conf.CONFIG['autologout'] - conf.CONFIG['notify_autologout']) * 60):
+                       self.autologoutWarn = True
+                       self.warnlogoutsignal.emit()
+
+                # If there's no credentials file and autologout is set, we check for the last
+                # click and if surpassed, a logout will be performed.
+                if conf.CONFIG['autologout'] != 0 and not isfile(conf.USERCREDSFILE):
+                    if (int(time()) - self.lastclick) >= (conf.CONFIG['autologout'] * 60):
+                        self.stopThread = True
+                        autologout = True
+
                 sleep(UPDATESLEEPINTERVAL)
             else:
                 return
+
+        if autologout:
+            self.logoutsignal.emit(True)
+
+    def restart_thread(self):
+        """
+            Description: Simply starts or restarts the background thread
+            Arguments: None
+            Returns: Nothing
+        """
+
+        self.stopThread = False
+        self.lastclick = int(time())
+        self.thread = threading.Thread(target=self.refresh_statuses, args=())
+        self.thread.daemon = True                            # Daemonize thread
+        self.thread.start()
 
     def start_vmpane(self):
         """
@@ -674,12 +784,12 @@ class OvirtClient(QWidget):
             Returns: Nothing
         """
 
+        self.show()
+
         self.load_vms()
         self.center()
 
-        self.thread = threading.Thread(target=self.refresh_statuses, args=())
-        self.thread.daemon = True                            # Daemonize thread
-        self.thread.start()
+        self.restart_thread()
 
     def confirm_quit(self):
         """
@@ -690,15 +800,10 @@ class OvirtClient(QWidget):
 
         global conf
 
-        reply = QMessageBox.question(None, _('confirm'), _('confirm_quit'), QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        reply = QMessageBox.question(None, _('apptitle') + ': ' + _('confirm'), _('confirm_quit'), QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
-            if conf.OVIRTCONN:
-                try:
-                    conf.OVIRTCONN.disconnect()
-                except ConnectionError:
-                    pass
-            self.stopThread = True
+            self.logout(reconnect=False)
             return True
         else:
             return False
@@ -708,8 +813,10 @@ class OvirtClient(QWidget):
             Description: Triggered when the Exit button in the Toolbar is hit. Confirmation will
                          be needed.
             Arguments: None
-            Returns: Nothing, exits if users confirms.
+            Returns: Nothing, exits if user confirms.
         """
+
+        self.lastclick = int(time())         # Last click timestamp update
 
         if self.confirm_quit():
             quit()
@@ -724,7 +831,7 @@ class OvirtClient(QWidget):
         if self.confirm_quit():
             event.accept()
         else:
-            event.ignore()        
+            event.ignore()
 
     def initUI(self):
         """
@@ -741,10 +848,12 @@ class OvirtClient(QWidget):
         self.center()
 
         self.setWindowTitle(_('apptitle') + ' ' + VERSION)
-        self.setWindowIcon(QIcon(IMGDIR + 'appicon.png'))       
+        self.setWindowIcon(QIcon(IMGDIR + 'appicon.png'))
         self.show()
 
         self.updatesignal.connect(self.update_status_icon)
+        self.logoutsignal.connect(self.logout)
+        self.warnlogoutsignal.connect(self.logoutWarn)
         self.reloadsignal.connect(self.load_vms)
 
         if not conf.USERNAME:
@@ -822,6 +931,22 @@ def checkConfig():
     except ConfigParser.NoOptionError:
         allow_remember = '1'
 
+    try:
+        autologout = int(config.get('app', 'autologout'))
+    except ValueError:
+        autologout = 0
+    except ConfigParser.NoOptionError:
+        autologout = 0
+
+    try:
+        notify_autologout = int(config.get('app', 'notify_autologout'))
+        if (autologout and notify_autologout >= autologout) or (not autologout):
+            notify_autologout = 0
+    except ValueError:
+        notify_autologout = 0
+    except ConfigParser.NoOptionError:
+        notify_autologout = 0
+
     # Config OK, storing values
     conf.CONFIG['ovirturl'] = ovirturl
     conf.CONFIG['ovirtdomain'] = ovirtdomain
@@ -830,6 +955,8 @@ def checkConfig():
     conf.CONFIG['prefproto'] = prefproto
     conf.CONFIG['fullscreen'] = fullscreen
     conf.CONFIG['allow_remember'] = allow_remember
+    conf.CONFIG['autologout'] = autologout
+    conf.CONFIG['notify_autologout'] = notify_autologout
 
     lang = gettext.translation(conf.CONFIG['applang'], localedir='lang', languages=[conf.CONFIG['applang']])
     return lang
@@ -839,5 +966,5 @@ if __name__ == '__main__':
     lang.install()
 
     app = QApplication(sys.argv)
-    ovirtclient = OvirtClient()
+    OvirtClient()
     sys.exit(app.exec_())

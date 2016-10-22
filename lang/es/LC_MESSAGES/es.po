@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: oVirt Client\n"
-"POT-Creation-Date: 2016-10-19 20:04+0100\n"
-"PO-Revision-Date: 2016-10-19 20:36+0100\n"
+"POT-Creation-Date: 2016-10-21 21:49+0100\n"
+"PO-Revision-Date: 2016-10-22 17:55+0100\n"
 "Last-Translator: Nicolás Kovac Neumann <nicolas@devels.es>\n"
 "Language-Team: nicolas@devels.es\n"
 "Language: en\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Poedit-SearchPath-0: /home/nico/ovirt_client/ovirt_client\n"
 
 #: /home/nico/ovirt_client/ovirt_client/about.py:51
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:734
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:860
 msgid "apptitle"
 msgstr "Cliente oVirt de escritorio"
 
@@ -32,249 +32,263 @@ msgid "unofficial_project"
 msgstr "Este proyecto NO es oficial."
 
 #: /home/nico/ovirt_client/ovirt_client/about.py:63
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:227
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:228
 msgid "ok"
 msgstr "OK"
 
 #: /home/nico/ovirt_client/ovirt_client/about.py:84
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:143
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:148
 msgid "about"
 msgstr "Información"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:62
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:63
 msgid "loading"
 msgstr "Cargando..."
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:78
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:79
 msgid "authenticating"
 msgstr "Autenticando..."
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:86
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:87
 msgid "authenticated_and_storing"
 msgstr "Autenticado, almacenando credenciales..."
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:89
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:93
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:163
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:264
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:354
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:389
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:392
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:566
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:90
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:94
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:164
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:274
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:372
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:414
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:417
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:599
 msgid "error"
 msgstr "Algo malo pasó..."
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:89
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:90
 msgid "ovirt_connection_error"
 msgstr "Error de conexión a oVirt"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:90
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:94
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:91
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:95
 msgid "error_while_authenticating"
 msgstr "Error autenticando"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:93
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:94
 msgid "ovirt_request_error"
 msgstr "Error de petición a oVirt"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:105
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:106
 msgid "storing_credentials"
 msgstr "Almacenando credenciales"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:111
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:112
 msgid "successfully_authenticated"
 msgstr "Autenticación correcta"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:163
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:164
 msgid "no_empty_creds"
 msgstr ""
 "Ni el nombre ni la contraseña deben ser vacíos. Por favor, introduzca sus "
 "credenciales de oVirt."
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:177
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:258
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:424
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:684
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:178
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:268
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:457
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:808
 msgid "confirm"
 msgstr "Confirmar"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:177
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:684
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:178
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:808
 msgid "confirm_quit"
 msgstr "¿Está seguro de querer salir?"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:211
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:212
 msgid "username"
 msgstr "Nombre de usuario"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:213
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:214
 msgid "password"
 msgstr "Contraseña"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:224
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:225
 msgid "remember_username_and_password"
 msgstr "Recordar usuario y contraseña"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:230
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:231
 msgid "cancel"
 msgstr "Cancelar"
 
-#: /home/nico/ovirt_client/ovirt_client/credentials.py:258
+#: /home/nico/ovirt_client/ovirt_client/credentials.py:260
 msgid "credentials"
 msgstr "Credenciales"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:80
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:85
 msgid "no_vms"
 msgstr ""
 "En este momento no dispone de permisos sobre máquinas en esta "
 "infraestructura oVirt"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:131
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:136
 msgid "refresh"
 msgstr "Recargar"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:136
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:141
 msgid "forget_credentials"
 msgstr "Olvidar credenciales"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:148
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:153
 msgid "exit"
 msgstr "Salir"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:199
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:204
 msgid "up"
 msgstr "encendida"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:201
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:206
 msgid "down"
 msgstr "apagada"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:203
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:208
 msgid "powering_down"
 msgstr "apagando"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:205
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:210
 msgid "wait_for_launch"
 msgstr "encendiendo"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:207
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:212
 msgid "powering_up"
 msgstr "encendiendo"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:219
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:236
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:226
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:243
 msgid "shut_down"
 msgstr "apagar"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:221
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:238
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:228
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:245
 msgid "power_on"
 msgstr "encender"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:233
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:258
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:240
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:268
 msgid "current_vm_status"
 msgstr "El estado actual de la máquina es"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:236
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:238
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:243
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:245
 msgid "click_to_action"
 msgstr "Haga click para"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:255
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:369
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:394
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:265
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:282
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:288
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:390
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:419
 msgid "warning"
 msgstr "Aviso"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:255
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:265
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:282
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:288
 msgid "vm_in_unchangeable_status"
 msgstr ""
 "No se puede cambiar el estado de una máquina mientras ya se esté realizando "
 "una tarea de encendido/apagado"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:258
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:268
 msgid "confirm_vm_status_change"
 msgstr "Por favor, confirme el cambio del estado de la máquina virtual a"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:264
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:389
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:566
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:631
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:643
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:274
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:414
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:599
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:720
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:732
 msgid "unexpected_connection_drop"
 msgstr "La conexión se ha perdido inesperadamente. La aplicación se cerrará."
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:269
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:272
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:429
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:280
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:286
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:462
 msgid "success"
 msgstr "Correcto"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:269
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:280
 msgid "shutting_down_vm"
 msgstr "Apagando máquina..."
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:272
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:286
 msgid "powering_up_vm"
 msgstr "Encendiendo máquina..."
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:354
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:372
 msgid "no_viewer_file"
 msgstr ""
 "No se pudo obtener el fichero de configuración del visor. Por favor, "
 "inténtelo de nuevo."
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:369
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:390
 msgid "cannot_connect_if_vm_not_up"
 msgstr ""
 "No se puede iniciar el visor de una máquina si su estado no es encendida. "
 "Asegúrese de que la máquina esté encendida primero."
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:387
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:409
 msgid "info"
 msgstr "Información"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:387
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:409
 msgid "acquiring_vm_from_pool"
 msgstr ""
 "Asignando una máquina del pool. Por favor, sea paciente. Una vez la máquina "
 "esté disponible, automáticamente aparecerá en su panel."
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:392
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:417
 msgid "cannot_attach_vm_to_user"
 msgstr ""
 "No se le puede asignar la máquina. Bien usted ya posee el número máximo de "
 "máquinas asignables, o no quedan más máquinas en el pool."
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:394
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:419
 msgid "object_is_not_a_vmpool"
 msgstr "El objeto seleccionado no es un pool de máquinas."
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:424
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:457
 msgid "confirm_forget_creds"
 msgstr "¿Está seguro de querer olvidar sus credenciales guardadas?"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:429
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:462
 msgid "creds_forgotten"
 msgstr "Credenciales olvidadas correctamente."
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:447
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:480
 msgid "vmpool"
 msgstr "Pool de máquinas"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:455
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:488
 msgid "grab_vm_vmpool"
 msgstr "Asignarse una máquina del pool"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:502
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:535
 msgid "connect"
 msgstr "Conectar a la máquina virtual"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:583
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:616
 msgid "total_machines"
 msgstr "Número de VMs"
 
-#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:583
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:616
 msgid "total_vmpools"
 msgstr "Número de VmPools"
+
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:662
+msgid "auto_logout_warn"
+msgstr ""
+"Si no acepta esta ventana, su sesión será cerrada en un espacio corto de "
+"tiempo debido a inactividad."
+
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:663
+msgid "auto_logout_warn_title"
+msgstr "Cliente oVirt de escritorio: Cierre de sesión forzado"

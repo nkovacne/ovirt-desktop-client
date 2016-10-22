@@ -1,3 +1,10 @@
+1.0.4
+-----
+* Stripped the HTML tags on authentication errors
+* An autologout policy has been implemented, read README.md for more info about *autologout* and *notify_autologout* parameters.
+* Parameters documented in settings.conf.example as well
+* Some minor fixes
+
 1.0.3
 -----
 * Added the VmPool listing support
