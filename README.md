@@ -15,6 +15,8 @@ This project is also accessible from the URL https://ovirt-desktop-client.click
 
 ### Installation
 
+Below you'll find the installation steps. Please note that some installing processes are not as smooth as described here and some of you might find a few obstacles in the way. You can find a Troubleshooting guide [here](https://ovirt-desktop-client.click/wiki/Install-process). If you find a different problem please share it.
+
 1. On Debian/Ubuntu environments, make sure to install these packages: 
    ```
    python python-dev python-virtualenv qt5-default libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev libssl-dev virt-viewer
@@ -67,43 +69,6 @@ This project is also accessible from the URL https://ovirt-desktop-client.click
    ```
    python ovirt-desktop-client/ovirtclient.py
    ```
-#### Installation troubleshooting
-
-Some environments seem to have their own peculiarities and installing SIP or PyQT5 might not go as smoothly as described above. Here are some known potholes.
-
-##### SIP: Permission denied on make install
-
-This happens when you're working inside a *virtualenv*, probably with an unprivileged user and *make install* will still try to copy files inside `/usr/local/...` instead of your virtualenv. You'll see something like this:
-
-```
-make[1]: entering directory « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/sipgen »
-cp -f sip /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/bin/sip
-make[1]: leaving directory « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/sipgen »
-make[1]: entering « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/siplib »
-cp -f sip.so /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/lib/python2.7/site-packages/sip.so
-strip /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/lib/python2.7/site-packages/sip.so
-cp -f /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/siplib/sip.h /usr/local/python/include/python2.7/sip.h
-cp: cannot create regular file « /usr/local/python/include/python2.7/sip.h »: Permission denied
-make[1]:  [install] Error 1
-make[1]: leaving directory « /stck2/stck2.2/ptoniato/python/pip/virtualenv-1.10.1/provaenv/build/SIP/siplib »
-make:  [install] Error 2
-```
-
-To solve it, run `python configure.py` specifying the include dir (i.e., your virtualenv's include dir where files should actually be installed).
-
-   ```
-   python configure.py --incdir=../venv/include/python2.7
-   ```
-
-Then, run `make` and `make install` again.
-
-##### PyQT5: Error: Make sure you have a working sip on your PATH or use the --sip argument to explicitly specify a working sip.
-
-This error shows up when the `configure.py` file is unable to find a valid SIP include directory. To solve it, simply force it specifying the `--sip-incdir` option:
-
-   ```
-   python configure.py --sip-incdir ../sip-X.X.X/siplib
-   ```
 
 ### Configuration
 
@@ -128,6 +93,6 @@ The beggining of this section is marked with the `[app]` line and references som
 * **autologout**: Time in minutes of idleness after which the session is forcibly closed. If set to 0, the autologout feature is disabled. Only works if there are not any credentials stored (also with allow_remember = 0), which is incompatible with this feature. Default: 0
 * **notify_autologout**: The time before *autologout* in minutes before a warning window will be shown to the user alerting them about an imminent forced logout event. Accepting the warning means resetting the idle time. This setting needs to have a lower value than *autologout*. If this setting is set and 'autologout' is not, or if the value of *notify_autologout* is lower than the value in *autologout*, this setting will be set to the default value. A value of 0 means that no warning windows will be shown to the user. _Example_: If *autologout* is 15 and *notify_autologout* is 5, means that 5 minutes before reaching the 15 minutes limit of idleness a warning window will be shown. If the user accepts the warning within the next 5 minutes limit, the idleness count will be reset. Otherwise the enforced logout will be performed. Default: 0
 
-## Current version
+### Current version
 
 Current stable version is 1.0.4. You can find a CHANGELOG file inside your directory to see news.
