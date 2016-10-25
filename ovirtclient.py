@@ -417,8 +417,7 @@ class OvirtClient(QWidget):
 
     def refresh_grid(self):
         """
-            Description: This method is invoked when the user clicks on the 'Refresh' button in the toolbar,
-                         will reload the main widget
+            Description: Invoked when the user clicks on the 'Refresh' button in the toolbar. Reloads the board.
             Arguments: None
             Returns: Nothing
         """
@@ -428,7 +427,7 @@ class OvirtClient(QWidget):
 
     def about(self):
         """
-            Description: This method is invoked when the user clicks on the 'About' button in the toolbar.
+            Description: Invoked when the user clicks on the 'About' button in the toolbar.
             Arguments: None
             Returns: Nothing
         """
@@ -438,8 +437,7 @@ class OvirtClient(QWidget):
     
     def forget_creds(self):
         """
-            Description: This method is invoked when the user clicks on the 'Forget credentials' button
-                         in the toolbar.
+            Description: Invoked when the user clicks on the 'Forget credentials' button in the toolbar.
             Arguments: None
             Returns: Nothing
         """
@@ -457,7 +455,7 @@ class OvirtClient(QWidget):
 
     def list_vmpools(self, row, delta, step, vmpools):
         """
-            Description: Creates one row per VmPool that a user has access to.
+            Description: Creates one row per VmPool that the user has access to.
             Arguments: 1. The index of the first row to loop over.
                        2. Delta step to sum to the progress bar.
                        3. The current step of the progress bar
@@ -504,7 +502,7 @@ class OvirtClient(QWidget):
 
     def list_vms(self, row, delta, step, vms):
         """
-            Description: Creates one row per VM that a user has access to.
+            Description: Creates one row per VM that the user has access to.
             Arguments: 1. The index of the first row to loop over.
                        2. Delta step to sum to the progress bar.
                        3. The current step of the progress bar
@@ -626,9 +624,8 @@ class OvirtClient(QWidget):
 
     def update_status_icon(self, i, newstatus):
         """
-            Description: This method is invoked when the background thread emits the signal
-                         because there has been a signal status change, so the corresponding
-                         VM status icon should be updated.
+            Description: Invoked when the background thread emits the signal announcing a status
+                         change, so the corresponding VM status icon should be updated.
             Arguments: i: Row that has changed their status. The VM can be matched with VmData().
                        newstatus: The new status for the VM.
             Returns: Nothing
@@ -640,8 +637,8 @@ class OvirtClient(QWidget):
 
     def logoutWarn(self):
         """
-            Description: This method is called if the warn_autologout setting has been set in the
-                         config. It will warn user to reset idle, otherwise an enforced logout will
+            Description: Called if the warn_autologout setting has been set in the config. It
+                         will warn user to reset their idle, otherwise an enforced logout will
                          be performed by calling the logout() method.
             Arguments: None
             Returns: Nothing
@@ -658,8 +655,8 @@ class OvirtClient(QWidget):
 
     def logout(self, reconnect=False):
         """
-            Description: This method is invoked when the autologout parameter is set in the config
-                         and the idle time overreached. This should require authentication again.
+            Description: Invoked when the autologout parameter is set in the config and the
+                         idle time is overreached. This should require authentication again.
             Arguments: None
             Returns: Nothing
         """
@@ -692,7 +689,7 @@ class OvirtClient(QWidget):
     def autologoutwarn_accepted(self):
         """
             Description: Callback issued when the user accepts the message box warning
-                         about an imminent autologout event
+                         about an imminent autologout event.
             Arguments: None
             Returns: Nothing
         """
@@ -705,9 +702,9 @@ class OvirtClient(QWidget):
                          send a signal to the main thread so the corresponding icons
                          are updated. Also, if there's a change in the number of VMs
                          that the user controls, the main Widgets will be reloaded.
-                         It'll also check the autologout setting + act accordingly.
+                         It'll also check the autologout setting & act accordingly.
             Arguments: None
-            Returns: Nothing (infinite loop)
+            Returns: Nothing ("infinite" loop)
         """
 
         global UPDATESLEEPINTERVAL
@@ -793,7 +790,7 @@ class OvirtClient(QWidget):
 
     def confirm_quit(self):
         """
-            Description: This method asks for confirmation from the user's side to close the app.
+            Description: Asks for confirmation from the user's side to close the app.
             Arguments: None
             Returns: True if the user wants to close the app, False otherwise.
         """
@@ -811,7 +808,7 @@ class OvirtClient(QWidget):
     def quit_button(self):
         """
             Description: Triggered when the Exit button in the Toolbar is hit. Confirmation will
-                         be needed.
+                         be required.
             Arguments: None
             Returns: Nothing, exits if user confirms.
         """
@@ -837,7 +834,7 @@ class OvirtClient(QWidget):
         """
             Description: Sets the size of the widget, the window title, centers
                          the window, connects signals to methods and opens the
-                         Credentials dialog.
+                         Credentials dialog if needed.
             Arguments: None
             Returns: Nothing.
         """

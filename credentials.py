@@ -67,7 +67,7 @@ class CheckCreds(QDialog):
     
     def timerEvent(self, e):
         """
-            Description: This method will be called periodically as part of the QBasicTimer() object. 
+            Description: Called periodically as part of the QBasicTimer() object.
                          Authentication will be handled within this method.
             Arguments: The event. Won't be used, though.
             Returns: Nothing, just exits when progress bar reaches 100%
@@ -168,7 +168,7 @@ class Credentials(QDialog):
 
     def confirm_quit(self):
         """
-            Description: Confirm whether to quit or not application. This option must be present
+            Description: Confirm whether to quit or not the app. This option must be present
                          in case the user cannot authenticate against oVirt, in which case the
                          main window won't be shown but the application will exit instead.
             Arguments: None
@@ -191,9 +191,9 @@ class Credentials(QDialog):
 
     def initUI(self):
         """
-            Description: Deactivation of the red 'x' to close the window. We enforce user to choose
-                         whether to authenticate or exit the application.
-            Arguments: The event.
+            Description: Shows the main dialog, with the username and password fields. Optionally, if
+                         allowed by configuration, also shows the "store credentials" checkbox.
+            Arguments: None
             Returns: Nothing
         """
 
