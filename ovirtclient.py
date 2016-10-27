@@ -23,8 +23,8 @@ from time import sleep, time
 from base64 import encodestring
 from xml.etree import cElementTree as ET
 from random import randint
-from os import remove
 from subprocess import Popen
+from os import remove, access, X_OK
 from os.path import isfile
 from ssl import _create_unverified_context
 from globalconf import *
@@ -358,13 +358,15 @@ class OvirtClient(QWidget):
         self.reloadsignal.emit()                   # Enforce a reload signal to update the status icon ASAP
 
     def create_viewer_thread(self, vmname, filename):
+        global conf
+
         def runInThread(vmname, onExit, popenArgs):
             viewer = Popen(popenArgs)
             viewer.wait()
             onExit(vmname)
             return
 
-        thread = threading.Thread(target=runInThread, args=(vmname, self.viewer_exit, ['/usr/bin/remote-viewer', '-t', vmname, '-f', '--', 'file://%s' % (filename)]))
+        thread = threading.Thread(target=runInThread, args=(vmname, self.viewer_exit, [conf.CONFIG['remote_viewer_path'], '-t', vmname, '-f', '--', 'file://%s' % (filename)]))
         thread.start()
 
         # Returns immediately after the thread starts
@@ -972,6 +974,16 @@ def checkConfig():
     except ConfigParser.NoOptionError:
         notify_autologout = 0
 
+    try:
+        remote_viewer_path = config.get('app', 'remote_viewer_path')
+        if not isfile(remote_viewer_path) or not access(remote_viewer_path, X_OK):
+            remote_viewer_path = '/usr/bin/remote-viewer'
+    except ConfigParser.NoOptionError:
+        remote_viewer_path = '/usr/bin/remote-viewer'
+
+    if not isfile(remote_viewer_path) or not access(remote_viewer_path, X_OK):
+        sys.exit("[ERROR] Cannot find a valid path for remote-viewer. Ensure you've installed the virt-viewer (or equivalent) package and if needed, set the app->remote_viewer_path configuration setting in your %s configuration file." % (conf.CONFIGFILE))
+
     # Config OK, storing values
     conf.CONFIG['ovirturl'] = ovirturl
     conf.CONFIG['ovirtdomain'] = ovirtdomain
@@ -982,6 +994,7 @@ def checkConfig():
     conf.CONFIG['allow_remember'] = allow_remember
     conf.CONFIG['autologout'] = autologout
     conf.CONFIG['notify_autologout'] = notify_autologout
+    conf.CONFIG['remote_viewer_path'] = remote_viewer_path
 
     lang = gettext.translation(conf.CONFIG['applang'], localedir='lang', languages=[conf.CONFIG['applang']])
     return lang

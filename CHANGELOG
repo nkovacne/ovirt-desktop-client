@@ -1,6 +1,7 @@
 1.0.5
 -----
 * Implemented multithreading for initiating more than one viewer (improves UX as well)
+* Added the app->remote_viewer_path setting
 * Minor fixes
 
 1.0.4

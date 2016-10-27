@@ -63,3 +63,10 @@ autologout = 15
 ;                    be reset. Otherwise the enforced logout will be performed.
 ;                    Default: 0
 notify_autologout = 5
+
+; remote_viewer_path: The path to the remote-viewer binary. By default, it's set to
+;                     the path that is compatible with most systems. However, you can
+;                     set a customized path here. If set to an invalid path, the app
+;                     will still try to find the correct binary. Will exit if no
+;                     suitable binary was found. Default: /usr/bin/remote-viewer
+remote_viewer_path = /usr/bin/remote-viewer
