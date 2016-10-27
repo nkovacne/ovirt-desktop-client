@@ -23,7 +23,8 @@ from time import sleep, time
 from base64 import encodestring
 from xml.etree import cElementTree as ET
 from random import randint
-from os import system, remove
+from os import remove
+from subprocess import Popen
 from os.path import isfile
 from ssl import _create_unverified_context
 from globalconf import *
@@ -55,6 +56,7 @@ class OvirtClient(QWidget):
 
     stopThread = False                              # Sentinel for stopping the Thread execution
     autologoutWarn = False                          # Has the user been warned about autologout yet?
+    openviewer_vms = []                             # Initiated VMs in terms of the viewer
     updatesignal = pyqtSignal(int, str)             # Signal to update the status icons on status changes
     reloadsignal = pyqtSignal()                     # Signal to reload the main widget
     warnlogoutsignal = pyqtSignal()                 # Signal to warn the user about an imminent autologout
@@ -351,6 +353,23 @@ class OvirtClient(QWidget):
 
         return filename
 
+    def viewer_exit(self, vmname):
+        self.openviewer_vms.remove(vmname)         # Remove the VM from the list of opened viewers
+        self.reloadsignal.emit()                   # Enforce a reload signal to update the status icon ASAP
+
+    def create_viewer_thread(self, vmname, filename):
+        def runInThread(vmname, onExit, popenArgs):
+            viewer = Popen(popenArgs)
+            viewer.wait()
+            onExit(vmname)
+            return
+
+        thread = threading.Thread(target=runInThread, args=(vmname, self.viewer_exit, ['/usr/bin/remote-viewer', '-t', vmname, '-f', '--', 'file://%s' % (filename)]))
+        thread.start()
+
+        # Returns immediately after the thread starts
+        return thread
+
     def connect2machine(self, vmid, vmname):
         """
             Description: Connecting to the machine involves two steps, this method does both and
@@ -364,9 +383,7 @@ class OvirtClient(QWidget):
         filename = self.store_vv_file(vmid, viewer_ticket)
 
         if filename:
-            self.stopThread = True    # Stop the background thread while a remote viewer session has been established
-            system('/usr/bin/remote-viewer -t %s -f -- file://%s' % (vmname, filename))
-            self.restart_thread()
+            self.create_viewer_thread(vmname, filename)
         else:
             QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('no_viewer_file'))
 
@@ -377,7 +394,7 @@ class OvirtClient(QWidget):
             Arguments: The row id that has been clicked. This relationship is stored using the VmData class.
             Returns: Nothing
         """
-        
+
         self.lastclick = int(time())         # Last click timestamp update
 
         vmid = self.vmdata[rowid].vmid
@@ -387,6 +404,13 @@ class OvirtClient(QWidget):
         if vmstatus != 'up':
             QMessageBox.warning(None, _('apptitle') + ': ' + _('warning'), _('cannot_connect_if_vm_not_up'))
             return
+
+        if vmname in self.openviewer_vms:
+            QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('cannot_open_more_viewer_sessions'))
+            return
+
+        self.openviewer_vms.append(vmname)
+        self.refresh_grid()                  # Enforce a dashboard reload to make the icon refresh
 
         self.connect2machine(vmid, vmname)
     
@@ -523,9 +547,13 @@ class OvirtClient(QWidget):
             gridvmname.setStyleSheet(STANDARDCELLCSS)
             gridvmname.setAlignment(Qt.AlignCenter)
 
-            # Connect button
-            connect = self.make_button('connect', _('connect'));
-            connect.mousePressEvent = lambda x, r=row: self.connect(r)
+            # Connect button. Depending on whether it has already been hit, a different icon
+            # will be shown and the behavior will also be different.
+            if vmname not in self.openviewer_vms:
+                connect = self.make_button('connect', _('connect'));
+                connect.mousePressEvent = lambda x, r=row: self.connect(r)
+            else:
+                connect = self.make_button('viewer', _('viewer_already_opened'));
 
             # Status icon
             curaction = self.current_vm_status(vmstatus)
@@ -635,7 +663,7 @@ class OvirtClient(QWidget):
         imageSticon.mousePressEvent = lambda x, r=i: self.change_status(r)
         self.grid.addWidget(imageSticon, i, 2)
 
-    def logoutWarn(self):
+    def logout_warn(self):
         """
             Description: Called if the warn_autologout setting has been set in the config. It
                          will warn user to reset their idle, otherwise an enforced logout will
@@ -850,7 +878,7 @@ class OvirtClient(QWidget):
 
         self.updatesignal.connect(self.update_status_icon)
         self.logoutsignal.connect(self.logout)
-        self.warnlogoutsignal.connect(self.logoutWarn)
+        self.warnlogoutsignal.connect(self.logout_warn)
         self.reloadsignal.connect(self.load_vms)
 
         if not conf.USERNAME:

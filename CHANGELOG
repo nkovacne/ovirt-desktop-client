@@ -1,3 +1,8 @@
+1.0.5
+-----
+* Implemented multithreading for initiating more than one viewer (improves UX as well)
+* Minor fixes
+
 1.0.4
 -----
 * Stripped the HTML tags on authentication errors
