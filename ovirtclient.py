@@ -766,6 +766,11 @@ class OvirtClient(QWidget):
                                 self.vmdata[i].vmstatus = curstatus
                                 self.updatesignal.emit(i, curstatus)
 
+                # If there is any currently open viewer, we'll reset the idle time so we don't close the session
+                # while there still is any open session.
+                if self.openviewer_vms:
+                    self.lastclick = int(time())         # Last click timestamp update
+
                 # If the autologout warning has not been shown yet and it's configured, we do so
                 if conf.CONFIG['autologout'] != 0 and conf.CONFIG['notify_autologout'] != 0 and not self.autologoutWarn and \
                    (int(time() - self.lastclick) >= (conf.CONFIG['autologout'] - conf.CONFIG['notify_autologout']) * 60):
