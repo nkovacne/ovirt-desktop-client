@@ -1,3 +1,8 @@
+1.0.5-1
+-------
+* Fix: _create_unverified_context() seems not to be present in some older versions of Python, replaced it with the proper way (creating an empty context for urlopen)
+* Improved installation instructions in README
+
 1.0.5
 -----
 * Implemented multithreading for initiating more than one viewer (improves UX as well)

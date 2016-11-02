@@ -15,19 +15,29 @@ This project is also accessible from the URL https://ovirt-desktop-client.click
 
 ### Installation
 
-Below you'll find the installation steps. Please note that some installing processes are not as smooth as described here and some of you might find a few obstacles in the way. You can find a Troubleshooting guide [here](https://ovirt-desktop-client.click/wiki/Install-process). If you find a different problem please share it.
+Below you'll find the installation steps. Please note that some installing processes are not as smooth as described here and some of you might find a few obstacles in the way. You can also find a [Troubleshooting guide](https://ovirt-desktop-client.click/wiki/Install-process). If you find a different problem please share it.
 
-1. On Debian/Ubuntu environments, make sure to install these packages: 
-   ```
-   python python-dev python-virtualenv qt5-default libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev libssl-dev virt-viewer
-   ```
+On Debian/Ubuntu environments, make sure to install these packages: 
+```
+python python-dev python-virtualenv qt5-default libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev libssl-dev virt-viewer
+```
 
-   On RHEL environments, make sure to install these packages:
-   ```
-   python python-devel python-virtualenv python-pip gcc gcc-c++ qt5-qtbase qt5-qtbase-devel libcurl-devel libxml2 libxml2-devel libxslt-devel openssl-devel virt-viewer
-   ```
+On RHEL environments, make sure to install these packages:
+```
+python python-devel python-virtualenv python-pip gcc gcc-c++ qt5-qtbase qt5-qtbase-devel libcurl-devel libxml2 libxml2-devel libxslt-devel openssl-devel virt-viewer
+```
 
-2. Create the project directory and create a *virtualenv* inside:
+There are 2 sets of instructions you might follow: The short or the long way. You'll need to install 2 components which are SIP and PyQt5 and evidences show that the process to install them is very platform-dependent, so under Ubuntu you'll need to do some steps that might differ quite much from a CentOS platform, for example. The long way aims to be platform independent and should work for most systems. Otherwise, please open an issue.
+
+#### Short way
+
+The short way of installing required components is that you find out which packages correspond to both SIP and PyQt5 and install them. Either via `yum` if you're using RHEL-based systems or `apt-get` under Debian-based, and so on.
+
+Optionally, you can install a `virtualenv` (using the `python-virtualenv` package). This is more a preference matter, some people prefer installing everything under a virtualenv, other prefer the system-wide way.
+
+#### Long (but reliable) way
+
+1. Create the project directory and create a *virtualenv* inside:
    ```
    mkdir ovirt-desktop-client
    cd ovirt-desktop-client
@@ -35,7 +45,7 @@ Below you'll find the installation steps. Please note that some installing proce
    . venv/bin/activate
    ```
 
-3. You have to download the SIP and PyQT5 projects and install them manually. Starting with SIP, [download](https://sourceforge.net/projects/pyqt/files/sip/) the *tar.gz* file to your ~/ovirt_client directory, uncompress it and compile it.
+2. You have to download the SIP and PyQT5 projects and install them manually. Starting with SIP, [download](https://sourceforge.net/projects/pyqt/files/sip/) the *tar.gz* file to your ~/ovirt_client directory, uncompress it and compile it.
    ```
    tar zxvf sip-X.X.X.tar.gz
    cd sip-X.X.X
@@ -45,7 +55,7 @@ Below you'll find the installation steps. Please note that some installing proce
    cd ..
    ```
 
-4. Let's do the same with [PyQT5](https://www.riverbankcomputing.com/software/pyqt/download5).
+3. Let's do the same with [PyQT5](https://www.riverbankcomputing.com/software/pyqt/download5).
    ```
    tar zxvf PyQt-gpl-X.X.tar.gz
    cd PyQt-gpl-X.X
@@ -55,17 +65,17 @@ Below you'll find the installation steps. Please note that some installing proce
    cd ..
    ```
 
-5. Clone the oVirt-desktop-client project:
+4. Clone the oVirt-desktop-client project:
    ```
    git clone https://github.com/nkovacne/ovirt-desktop-client.git
    ```
 
-6. Install the Python requisites with `pip`:
+5. Install the Python requisites with `pip`:
    ```
    pip install -r ovirt-desktop-client/requisites.txt
    ```
 
-7. You're done. Even if you have not configured settings yet, you can try to start the application just to see if it works.
+6. You're done. Even if you have not configured settings yet, you can try to start the application just to see if it works.
    ```
    python ovirt-desktop-client/ovirtclient.py
    ```
@@ -96,4 +106,4 @@ The beggining of this section is marked with the `[app]` line and references som
 
 ### Current version
 
-Current stable version is 1.0.5. You can find a CHANGELOG file inside your directory to see news.
+Current stable version is 1.0.5-1. You can find a CHANGELOG file inside your directory to see news.

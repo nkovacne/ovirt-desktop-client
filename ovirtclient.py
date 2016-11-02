@@ -26,7 +26,7 @@ from random import randint
 from subprocess import Popen
 from os import remove, access, X_OK
 from os.path import isfile
-from ssl import _create_unverified_context
+from ssl import SSLContext, PROTOCOL_TLSv1
 from globalconf import *
 from credentials import Credentials
 from about import About
@@ -306,8 +306,8 @@ class OvirtClient(QWidget):
         req.add_header('Authorization', 'Basic ' + base64str)
         req.add_header('filter', 'true')
 
-        context = _create_unverified_context()
-        tickethash = urllib2.urlopen(req, context=context).read()
+        unverified_ctxt = SSLContext(PROTOCOL_TLSv1)
+        tickethash = urllib2.urlopen(req, context=unverified_ctxt).read()
         xmlcontent = ET.fromstring(tickethash)
 
         ticket = None
@@ -342,8 +342,8 @@ class OvirtClient(QWidget):
         req.add_header('Accept', 'application/x-virt-viewer')
         req.add_header('filter', 'true')
 
-        context = _create_unverified_context()
-        contents = urllib2.urlopen(req, context=context).read()
+        unverified_ctxt = SSLContext(PROTOCOL_TLSv1)
+        contents = urllib2.urlopen(req, context=unverified_ctxt).read()
         if conf.CONFIG['fullscreen'] == '1':
            contents = contents.replace('fullscreen=0', 'fullscreen=1')
         filename = '/tmp/viewer-' + str(randint(10000, 99999))
