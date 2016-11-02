@@ -212,6 +212,8 @@ class OvirtClient(QWidget):
             hrstatus = _('wait_for_launch')
         elif vmstatus == 'powering_up':
             hrstatus = _('powering_up')
+        elif vmstatus == 'reboot_in_progress':
+            hrstatus = _('rebooting')
         else:
             hrstatus = 'unknown'
         return hrstatus
@@ -343,15 +345,19 @@ class OvirtClient(QWidget):
         req.add_header('filter', 'true')
 
         unverified_ctxt = SSLContext(PROTOCOL_TLSv1)
-        contents = urllib2.urlopen(req, context=unverified_ctxt).read()
-        if conf.CONFIG['fullscreen'] == '1':
-           contents = contents.replace('fullscreen=0', 'fullscreen=1')
-        filename = '/tmp/viewer-' + str(randint(10000, 99999))
-        f = open(filename, 'w')
-        f.write(contents)
-        f.close()
+        try:
+            contents = urllib2.urlopen(req, context=unverified_ctxt).read()
+            if conf.CONFIG['fullscreen'] == '1':
+               contents = contents.replace('fullscreen=0', 'fullscreen=1')
+            filename = '/tmp/viewer-' + str(randint(10000, 99999))
+            f = open(filename, 'w')
+            f.write(contents)
+            f.close()
 
-        return filename
+            return filename
+        except urllib2.HTTPError, em:
+            QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('unexpected_request_error') + '(' + str(em.code) + '): ' + em.reason + '. ' + _('check_vm_config_updated'))
+            return None
 
     def viewer_exit(self, vmname):
         self.openviewer_vms.remove(vmname)         # Remove the VM from the list of opened viewers
@@ -387,6 +393,9 @@ class OvirtClient(QWidget):
         if filename:
             self.create_viewer_thread(vmname, filename)
         else:
+            if vmname in self.openviewer_vms:
+                self.openviewer_vms.remove(vmname)         # Remove the VM from the list of opened viewers
+
             QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('no_viewer_file'))
 
     def connect(self, rowid):
