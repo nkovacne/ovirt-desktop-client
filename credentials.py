@@ -18,6 +18,7 @@ import gettext
 import os
 import ConfigParser
 from re import sub
+from codecs import encode, decode
 from os.path import isfile
 from globalconf import conf, IMGDIR
 from PyQt5.QtWidgets import QProgressBar, QPushButton, QDesktopWidget, QDialog, QLabel, QLineEdit, QGridLayout, QCheckBox, QMessageBox
@@ -105,7 +106,7 @@ class CheckCreds(QDialog):
             if self.remember:
                 self.status.setText(_('storing_credentials'))
                 with os.fdopen(os.open(conf.USERCREDSFILE, os.O_WRONLY | os.O_CREAT, 0600), 'w') as handle:
-                    handle.write('[credentials]\nusername=%s\npassword=%s' % (self.uname, self.pw))
+                    handle.write('[credentials]\nusername=%s\npassword=%s' % (self.uname, encode(self.pw, 'rot_13')))
                     handle.close()
                 self.step = 99
             else:
@@ -271,7 +272,7 @@ class Credentials(QDialog):
                 config = ConfigParser.ConfigParser()
                 config.read(conf.USERCREDSFILE)
                 uname = config.get('credentials', 'username')
-                pw = config.get('credentials', 'password')
+                pw = decode(config.get('credentials', 'password'), 'rot_13')
                 self.edit_username.setText(uname)
                 self.edit_pw.setText(pw)
                 self.check_creds()

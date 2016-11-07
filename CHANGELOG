@@ -1,3 +1,9 @@
+1.0.6
+-----
+* Implemented password obfuscation. It makes no sense trying to encrypt credentials in a Python code as anything can be decrypted, decompiled, etc., so at least password is now obfuscated if stored.
+
+  **IMPORTANT**: If you already stored your credentials before this version, they won't match once you run your client after pulling latest changes, so expect an authentication error. Either enter the credentials again and select the "store my credentials" checkbox or remove the credentials file yourself (~/.ovirtclient).
+
 1.0.5-2
 -------
 * Added the 'reboot in progress' event
