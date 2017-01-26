@@ -1,3 +1,7 @@
+1.0.6b
+------
+* Hotfix of a DBZ when no VMs or VMPools are assigned to a user
+
 1.0.6
 -----
 * Implemented password obfuscation. It makes no sense trying to encrypt credentials in a Python code as anything can be decrypted, decompiled, etc., so at least password is now obfuscated if stored.

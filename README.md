@@ -106,4 +106,4 @@ The beggining of this section is marked with the `[app]` line and references som
 
 ### Current version
 
-Current stable version is 1.0.6. You can find a CHANGELOG file inside your directory to see news.
+Current stable version is 1.0.6b. You can find a CHANGELOG file inside your directory to see news.

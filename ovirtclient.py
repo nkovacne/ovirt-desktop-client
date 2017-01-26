@@ -632,7 +632,10 @@ class OvirtClient(QWidget):
 
         # Set the main widget height based on the number of VMs 
         winheight = self.vm_based_resize(len(vms) + len(vmpools))
-        delta = int(100 / (len(vms) + len(vmpools)))
+        if len(vms) + len(vmpools) > 0:
+            delta = int(100 / (len(vms) + len(vmpools)))
+        else:
+            delta = int(100)
 
         if vmpools:
             step = self.list_vmpools(1, delta, step, vmpools)
