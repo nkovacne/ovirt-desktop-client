@@ -15,7 +15,7 @@ This project is also accessible from the URL https://ovirt-desktop-client.click
 
 ### Installation
 
-Below you'll find the installation steps. Please note that some installing processes are not as smooth as described here and some of you might find a few obstacles in the way. You can also find a [Troubleshooting guide](https://ovirt-desktop-client.click/wiki/Install-process). If you find a different problem please share it.
+Below you'll find the installation steps. Please note that some installing processes are not as smooth as described here and some of you might find a few obstacles in the way. You can also find a [Troubleshooting guide](https://github.com/nkovacne/ovirt-desktop-client/wiki/Install-process). If you find a different problem please share it.
 
 On Debian/Ubuntu environments, make sure to install these packages: 
 ```
@@ -37,6 +37,13 @@ Optionally, you can install a `virtualenv` (using the `python-virtualenv` packag
 
 #### Long (but reliable) way
 
+The latest successfully built combination of SIP and PyQT versions are:
+
+ * SIP: 4.19.18
+ * PyQt: 5.11.3
+
+This doesn't mean other combinations are not possible. These are only the tested ones. However, seems that newer versions of PyQt are failing to `make` (`5.13.0` so far).
+
 1. Create the project directory and create a *virtualenv* inside:
    ```
    mkdir ovirt-desktop-client
@@ -45,7 +52,7 @@ Optionally, you can install a `virtualenv` (using the `python-virtualenv` packag
    . venv/bin/activate
    ```
 
-2. You have to download the SIP and PyQT5 projects and install them manually. Starting with SIP, [download](https://sourceforge.net/projects/pyqt/files/sip/) the *tar.gz* file to your ~/ovirt_client directory, uncompress it and compile it.
+2. You have to download the SIP and PyQT5 projects and install them manually. Starting with SIP, [download](https://www.riverbankcomputing.com/software/sip/download) the *tar.gz* file to your ~/ovirt_client directory, uncompress it and compile it.
    ```
    tar zxvf sip-X.X.X.tar.gz
    cd sip-X.X.X
@@ -55,11 +62,12 @@ Optionally, you can install a `virtualenv` (using the `python-virtualenv` packag
    cd ..
    ```
 
-3. Let's do the same with [PyQT5](https://www.riverbankcomputing.com/software/pyqt/download5).
+3. Let's do the same with [PyQT5](https://www.riverbankcomputing.com/software/pyqt/download5). **Note**: Versions from `5.11.x` and above won't work. Use the latest version of the `5.10.x` minor.
    ```
+   pip install enum34
    tar zxvf PyQt-gpl-X.X.tar.gz
    cd PyQt-gpl-X.X
-   python configure.py
+   python configure.py (you'll need to accept the license to install PyQt5)
    make
    make install
    cd ..
@@ -70,9 +78,9 @@ Optionally, you can install a `virtualenv` (using the `python-virtualenv` packag
    git clone https://github.com/nkovacne/ovirt-desktop-client.git
    ```
 
-5. Install the Python requisites with `pip`:
+5. Install the Python requirements with `pip`:
    ```
-   pip install -r ovirt-desktop-client/requisites.txt
+   pip install -r ovirt-desktop-client/requirements.txt
    ```
 
 6. You're done. Even if you have not configured settings yet, you can try to start the application just to see if it works.
