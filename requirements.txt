@@ -1,2 +1,5 @@
 pycurl
-ovirt-engine-sdk-python==3.6.7
+configparser
+ovirt-engine-sdk-python==4.1
+PyQt5-sip==4.19.18
+PyQt5==5.13.0

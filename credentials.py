@@ -16,7 +16,7 @@
 
 import gettext
 import os
-import ConfigParser
+import configparser
 from re import sub
 from codecs import encode, decode
 from os.path import isfile
@@ -24,8 +24,9 @@ from globalconf import conf, IMGDIR
 from PyQt5.QtWidgets import QProgressBar, QPushButton, QDesktopWidget, QDialog, QLabel, QLineEdit, QGridLayout, QCheckBox, QMessageBox
 from PyQt5.QtGui import QImage, QPixmap, QIcon
 from PyQt5.QtCore import QBasicTimer, Qt
-from ovirtsdk.api import API
-from ovirtsdk.infrastructure.errors import ConnectionError, RequestError
+# FIXME
+#from ovirtsdk.api import API
+#from ovirtsdk.infrastructure.errors import ConnectionError, RequestError
 
 class CheckCreds(QDialog):
     """
@@ -80,6 +81,7 @@ class CheckCreds(QDialog):
         self.status.setText(_('authenticating'))
 
         if not conf.USERNAME:
+            # FIXME: API class no longer exists
             try:
                 kvm = API(url=conf.CONFIG['ovirturl'], username=self.uname + '@' + conf.CONFIG['ovirtdomain'], password=self.pw, insecure=True, timeout=int(conf.CONFIG['conntimeout']), filter=True)
                 conf.OVIRTCONN = kvm
@@ -105,9 +107,10 @@ class CheckCreds(QDialog):
             # Credentials were ok, we check whether we should store them for further uses
             if self.remember:
                 self.status.setText(_('storing_credentials'))
-                with os.fdopen(os.open(conf.USERCREDSFILE, os.O_WRONLY | os.O_CREAT, 0600), 'w') as handle:
-                    handle.write('[credentials]\nusername=%s\npassword=%s' % (self.uname, encode(self.pw, 'rot_13')))
-                    handle.close()
+                # FIXME
+                #with os.fdopen(os.open(conf.USERCREDSFILE, os.O_WRONLY | os.O_CREAT, 0600), 'w') as handle:
+                #    handle.write('[credentials]\nusername=%s\npassword=%s' % (self.uname, encode(self.pw, 'rot_13')))
+                #    handle.close()
                 self.step = 99
             else:
                 self.status.setText(_('successfully_authenticated'))
@@ -269,7 +272,7 @@ class Credentials(QDialog):
             if conf.CONFIG['allow_remember'] == '0':
                 os.remove(conf.USERCREDSFILE)
             else:
-                config = ConfigParser.ConfigParser()
+                config = configparser.ConfigParser()
                 config.read(conf.USERCREDSFILE)
                 uname = config.get('credentials', 'username')
                 pw = decode(config.get('credentials', 'password'), 'rot_13')

@@ -16,8 +16,8 @@
 
 import sys
 import gettext
-import ConfigParser
-import urllib2
+import configparser
+import urllib.request
 import threading
 from time import sleep, time
 from base64 import encodestring
@@ -34,7 +34,8 @@ from version import VERSION
 from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMessageBox, QGridLayout, QLabel, QWidget, QProgressBar, QScrollArea, QVBoxLayout, QAction, QToolBar
 from PyQt5.QtGui import QImage, QPixmap, QIcon
 from PyQt5.QtCore import Qt, QObjectCleanupHandler, pyqtSignal
-from ovirtsdk.infrastructure.errors import ConnectionError, RequestError
+# FIXME
+#from ovirtsdk.infrastructure.errors import ConnectionError, RequestError
 
 class VmData:
     """
@@ -272,7 +273,9 @@ class OvirtClient(QWidget):
 
         if reply == QMessageBox.Yes:
             try:
+                # FIXME
                 vm = conf.OVIRTCONN.vms.get(id=self.vmdata[rowid].vmid)
+                # FIXME: Error is now generic
             except ConnectionError:
                 QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('unexpected_connection_drop'))
                 quit()
@@ -303,13 +306,13 @@ class OvirtClient(QWidget):
 
         global conf
 
-        req = urllib2.Request('%s/%s/%s/%s' % (conf.CONFIG['ovirturl'], 'vms', vmid, 'graphicsconsoles'))
+        req = urllib2.request.Request('%s/%s/%s/%s' % (conf.CONFIG['ovirturl'], 'vms', vmid, 'graphicsconsoles'))
         base64str = encodestring('%s:%s' % (conf.USERNAME + '@' + conf.CONFIG['ovirtdomain'], conf.PASSWORD)).replace('\n', '')
         req.add_header('Authorization', 'Basic ' + base64str)
         req.add_header('filter', 'true')
 
         unverified_ctxt = SSLContext(PROTOCOL_TLSv1)
-        tickethash = urllib2.urlopen(req, context=unverified_ctxt).read()
+        tickethash = urllib2.request.urlopen(req, context=unverified_ctxt).read()
         xmlcontent = ET.fromstring(tickethash)
 
         ticket = None
@@ -337,7 +340,7 @@ class OvirtClient(QWidget):
         if not ticket:
             return False
 
-        req = urllib2.Request('%s/%s/%s/%s/%s' % (conf.CONFIG['ovirturl'], 'vms', vmid, 'graphicsconsoles', ticket))
+        req = urllib2.request.Request('%s/%s/%s/%s/%s' % (conf.CONFIG['ovirturl'], 'vms', vmid, 'graphicsconsoles', ticket))
         base64str = encodestring('%s:%s' % (conf.USERNAME + '@' + conf.CONFIG['ovirtdomain'], conf.PASSWORD)).replace('\n', '')
         req.add_header('Authorization', 'Basic ' + base64str)
         req.add_header('Content-Type', 'application/xml')
@@ -346,7 +349,7 @@ class OvirtClient(QWidget):
 
         unverified_ctxt = SSLContext(PROTOCOL_TLSv1)
         try:
-            contents = urllib2.urlopen(req, context=unverified_ctxt).read()
+            contents = urllib2.request.urlopen(req, context=unverified_ctxt).read()
             if conf.CONFIG['fullscreen'] == '1':
                contents = contents.replace('fullscreen=0', 'fullscreen=1')
             filename = '/tmp/viewer-' + str(randint(10000, 99999))
@@ -355,7 +358,7 @@ class OvirtClient(QWidget):
             f.close()
 
             return filename
-        except urllib2.HTTPError, em:
+        except urllib2.HTTPError as em:
             QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('unexpected_request_error') + '(' + str(em.code) + '): ' + em.reason + '. ' + _('check_vm_config_updated'))
             return None
 
@@ -439,12 +442,15 @@ class OvirtClient(QWidget):
         if vmtype == 'vmpool':
             try:
                 QMessageBox.information(None, _('apptitle') + ': ' + _('info'), _('acquiring_vm_from_pool'))
+                # FIXME
                 vmp = conf.OVIRTCONN.vmpools.get(id=self.vmdata[rowid].vmid)
                 vmp.allocatevm()
                 self.refresh_grid()
+            # FIXME: Error is now generic
             except ConnectionError:
                 QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('unexpected_connection_drop'))
                 quit()
+            # FIXME: Error is now generic
             except RequestError:
                 QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('cannot_attach_vm_to_user'))
         else:
@@ -624,7 +630,9 @@ class OvirtClient(QWidget):
 
         try:
             # Try getting the VM list from oVirt
+            # FIXME
             vms = sorted(conf.OVIRTCONN.vms.list(), cmp=self.compare_vms)
+            # FIXME
             vmpools = sorted(conf.OVIRTCONN.vmpools.list(), cmp=self.compare_vms)
         except ConnectionError:
             QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('unexpected_connection_drop'))
@@ -703,8 +711,10 @@ class OvirtClient(QWidget):
             Returns: Nothing
         """
 
+        # FIXME
         if conf.OVIRTCONN:
             try:
+                # FIXME
                 conf.OVIRTCONN.disconnect()
             except ConnectionError:
                 pass
@@ -753,8 +763,10 @@ class OvirtClient(QWidget):
 
         autologout = False
         while 1 and not self.stopThread:
+            # FIXME
             if conf.OVIRTCONN:
                 try:
+                    # FIXME
                     ovirt_num_machines = len(conf.OVIRTCONN.vms.list())
                 except ConnectionError:
                     sys.exit('[ERROR] ' + _('unexpected_connection_drop'))
@@ -767,6 +779,7 @@ class OvirtClient(QWidget):
                         vmid = self.vmdata[i].vmid
                         vmstatus = self.vmdata[i].vmstatus
                         try:
+                            # FIXME
                             ovirtvm = conf.OVIRTCONN.vms.get(id=vmid)
                         except ConnectionError:
                             sys.exit('[ERROR] ' + _('unexpected_connection_drop'))
@@ -929,7 +942,7 @@ def checkConfig():
     if not isfile(conf.CONFIGFILE):
         sys.exit("[ERROR] Configuration file (%s) does not exist" % (conf.CONFIGFILE))
 
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read(conf.CONFIGFILE)
 
     try:
