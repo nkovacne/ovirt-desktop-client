@@ -5,6 +5,14 @@
 ;      like: `https://myovirt.mydomain.com/ovirt-engine/api`.
 url = https://ovirt.yourdomain.com/api
 
+; cafile: Since oVirt 4.x, including the certificate of the oVirt instance
+;         is mandatory. For that, you have to take and export your oVirt
+;         certificate (you can do this connecting with your web browser to
+;         your URL and saving the certificate). It doesn't matter whether the
+;         CA is self-signed or not: Since oVirt 4.x this parameter is
+;         mandatory.
+cafile = /your-ovirt-project/ca.crt
+
 ; domain: The domain under which your users will authenticate. When you create
 ;         an AAA authenticator (LDAP, Kerberos, ...), a domain name is created
 ;         to match it. This value goes here, so users will authenticate as

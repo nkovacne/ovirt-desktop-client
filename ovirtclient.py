@@ -968,7 +968,7 @@ def checkConfig():
         sys.exit("[ERROR] Configuration file (%s) is missing a mandatory parameter: Section: ovirt, parameter: cafile. Check config." % (conf.CONFIGFILE))
 
     if not isfile(cafile):
-        sys.exit("[ERROR] Cannot find the CA file (%s). Check if file exists and if so, check if you have reading permissions in your config file." % (cafile, conf.CONFIGFILE))
+        sys.exit("[ERROR] Cannot find the CA file (%s). Check if file exists and if so, check if you have reading permissions in your config file." % (cafile))
 
     try:
         ovirtdomain = config.get('ovirt', 'domain')
