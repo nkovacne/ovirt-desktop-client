@@ -1,3 +1,10 @@
+2.0.0
+-----
+**MAJOR**: For migration process for 1.x to 2.0.0 please see README.md.
+
+* Migration to Python 3.x
+* Migration to oVirt Python SDK 4.0
+
 1.0.6b
 ------
 * Hotfix of a DBZ when no VMs or VMPools are assigned to a user

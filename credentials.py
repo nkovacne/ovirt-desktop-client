@@ -24,9 +24,7 @@ from globalconf import conf, IMGDIR
 from PyQt5.QtWidgets import QProgressBar, QPushButton, QDesktopWidget, QDialog, QLabel, QLineEdit, QGridLayout, QCheckBox, QMessageBox
 from PyQt5.QtGui import QImage, QPixmap, QIcon
 from PyQt5.QtCore import QBasicTimer, Qt
-# FIXME
-#from ovirtsdk.api import API
-#from ovirtsdk.infrastructure.errors import ConnectionError, RequestError
+from ovirtsdk4 import Connection, Error
 
 class CheckCreds(QDialog):
     """
@@ -81,20 +79,27 @@ class CheckCreds(QDialog):
         self.status.setText(_('authenticating'))
 
         if not conf.USERNAME:
-            # FIXME: API class no longer exists
             try:
-                kvm = API(url=conf.CONFIG['ovirturl'], username=self.uname + '@' + conf.CONFIG['ovirtdomain'], password=self.pw, insecure=True, timeout=int(conf.CONFIG['conntimeout']), filter=True)
-                conf.OVIRTCONN = kvm
+                conn = Connection(
+                  url=conf.CONFIG['ovirturl'],
+                  username=self.uname + '@' + conf.CONFIG['ovirtdomain'],
+                  password=self.pw,
+                  ca_file=conf.CONFIG['cafile'],
+                  insecure=True,
+                  timeout=int(conf.CONFIG['conntimeout']),
+                  headers={'filter':True}
+                )
+
+                conn.test(raise_exception=True)
+
+                conf.SOCKOBJ = conn
+                conf.OVIRTCONN = conn.system_service()
                 conf.USERNAME = self.uname
                 conf.PASSWORD = self.pw
                 self.status.setText(_('authenticated_and_storing'))
                 self.step = 49
-            except ConnectionError as e:
-                err.critical(self, _('apptitle') + ': ' + _('error'), _('ovirt_connection_error') + ': ' + sub('<[^<]+?>', '', str(e)))
-                self.status.setText(_('error_while_authenticating'))
-                self.step = 100
-            except RequestError as e:
-                err.critical(self, _('apptitle') + ': ' + _('error'), _('ovirt_request_error') + ': ' + sub('<[^<]+?>', '', str(e)))
+            except Error as e:
+                err.critical(self, _('apptitle') + ': ' + _('error'), _('ovirt_connection_error') + ': ' + str(e))
                 self.status.setText(_('error_while_authenticating'))
                 self.step = 100
         
@@ -107,10 +112,9 @@ class CheckCreds(QDialog):
             # Credentials were ok, we check whether we should store them for further uses
             if self.remember:
                 self.status.setText(_('storing_credentials'))
-                # FIXME
-                #with os.fdopen(os.open(conf.USERCREDSFILE, os.O_WRONLY | os.O_CREAT, 0600), 'w') as handle:
-                #    handle.write('[credentials]\nusername=%s\npassword=%s' % (self.uname, encode(self.pw, 'rot_13')))
-                #    handle.close()
+                with os.fdopen(os.open(conf.USERCREDSFILE, os.O_WRONLY | os.O_CREAT, 0o600), 'w') as handle:
+                    handle.write('[credentials]\nusername=%s\npassword=%s' % (self.uname, encode(self.pw, 'rot_13')))
+                    handle.close()
                 self.step = 99
             else:
                 self.status.setText(_('successfully_authenticated'))
