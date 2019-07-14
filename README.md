@@ -21,13 +21,15 @@ Below you'll find the installation steps. You can also find a [Troubleshooting g
 
 On Debian/Ubuntu environments, make sure to install these packages: 
 ```
-python python-dev python-virtualenv qt5-default libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev libssl-dev virt-viewer
+python3 python3-dev python3-virtualenv qt5-default libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev libssl-dev virt-viewer
 ```
 
 On RHEL environments, make sure to install these packages:
 ```
-python python-devel python-virtualenv python-pip gcc gcc-c++ qt5-qtbase qt5-qtbase-devel libcurl-devel libxml2 libxml2-devel libxslt-devel openssl-devel virt-viewer
+python36 python36-devel python36-virtualenv python36-pip gcc gcc-c++ qt5-qtbase qt5-qtbase-devel libcurl-devel libxml2 libxml2-devel libxslt-devel openssl-devel virt-viewer
 ```
+
+**Important for RHEL based environments**: Please note that in further steps, commands may vary in RHEL based environments. For example, it's likely your virtualenv command will be `virtualenv-3.6`, and your pip command will be `pip-3.6`. Please find the correct command in your case.
 
 Now just clone, install a virtualenv with Python3 as the Python executable and install the requirements for the project.
 
@@ -52,6 +54,8 @@ cd ovirt-desktop-client
 git pull
 pip install -r requirements.txt
 ```
+
+Check the `settings.conf.example` file just to check if you have all parameters up to date, and add those missing in your `settings.conf` file.
 
 ### Configuration
 

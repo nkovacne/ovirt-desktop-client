@@ -1,4 +1,3 @@
-* Migrate oVirt code to 4.X.X version. While ovirt-engine-sdk-python version 3.X.X is compatible with oVirt API 4.0.0, in the future this backwards compatibility will be removed. The oVirt code should all be rewritten to 4.X.X format.
 * Implement the "multitenant" mode (showing machines of multiple instances of oVirt into the same application).
 * Implement an "unexitable" mode (for Kiosk mode).
 * Include an option to make the main window modal.
