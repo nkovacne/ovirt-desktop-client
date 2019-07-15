@@ -21,7 +21,7 @@ Below you'll find the installation steps. You can also find a [Troubleshooting g
 
 On Debian/Ubuntu environments, make sure to install these packages: 
 ```
-python3 python3-dev python3-virtualenv qt5-default libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev libssl-dev virt-viewer
+python3 python3-dev python3-virtualenv python-virtualenv qt5-default libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev libssl-dev virt-viewer
 ```
 
 On RHEL environments, make sure to install these packages:
