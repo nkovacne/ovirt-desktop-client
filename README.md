@@ -37,6 +37,7 @@ Now just clone, install a virtualenv with Python3 as the Python executable and i
 git clone https://github.com/nkovacne/ovirt-desktop-client.git
 virtualenv -p python3 --always-copy venv
 . venv/bin/activate
+pip install --upgrade pip
 cd ovirt-desktop-client
 pip install -r requirements.txt
 ```
@@ -50,6 +51,7 @@ deactivate (in case you're working in the virtualenv)
 rm -rf venv
 virtualenv -p python3 --always-copy venv
 . venv/bin/activate
+pip install --upgrade pip
 cd ovirt-desktop-client
 git pull
 pip install -r requirements.txt
