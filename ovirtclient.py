@@ -20,7 +20,7 @@ import configparser
 import urllib.request
 import threading
 from time import sleep, time
-from base64 import encodestring
+from base64 import encodebytes
 from xml.etree import cElementTree as ET
 from random import randint
 from subprocess import Popen
@@ -326,8 +326,7 @@ class OvirtClient(QWidget):
         global conf
 
         req = urllib.request.Request('%s/%s/%s/%s' % (conf.CONFIG['ovirturl'], 'vms', vmid, 'graphicsconsoles'))
-        # Python 2 -> 3 conversion: encodestring expects a byte-like string, not str
-        base64str = encodestring(('%s:%s' % (conf.USERNAME + '@' + conf.CONFIG['ovirtdomain'], conf.PASSWORD)).encode()).decode().replace('\n', '')
+        base64str = encodebytes(('%s:%s' % (conf.USERNAME + '@' + conf.CONFIG['ovirtdomain'], conf.PASSWORD)).encode('UTF-8')).decode('UTF-8').replace('\n', '')
         req.add_header('Authorization', 'Basic ' + base64str)
         req.add_header('filter', 'true')
 
@@ -361,8 +360,7 @@ class OvirtClient(QWidget):
             return False
 
         req = urllib.request.Request('%s/%s/%s/%s/%s' % (conf.CONFIG['ovirturl'], 'vms', vmid, 'graphicsconsoles', ticket))
-        # Python 2 -> 3 conversion: encodestring expects a byte-like string, not str
-        base64str = encodestring(('%s:%s' % (conf.USERNAME + '@' + conf.CONFIG['ovirtdomain'], conf.PASSWORD)).encode()).decode().replace('\n', '')
+        base64str = encodebytes(('%s:%s' % (conf.USERNAME + '@' + conf.CONFIG['ovirtdomain'], conf.PASSWORD)).encode('UTF-8')).decode('UTF-8').replace('\n', '')
         req.add_header('Authorization', 'Basic ' + base64str)
         req.add_header('Content-Type', 'application/xml')
         req.add_header('Accept', 'application/x-virt-viewer')
