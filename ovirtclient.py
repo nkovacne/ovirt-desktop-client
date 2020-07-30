@@ -26,7 +26,7 @@ from random import randint
 from subprocess import Popen
 from os import remove, access, X_OK
 from os.path import isfile
-from ssl import SSLContext, PROTOCOL_TLSv1
+from ssl import SSLContext, PROTOCOL_TLS
 from globalconf import *
 from credentials import Credentials
 from about import About
@@ -331,7 +331,7 @@ class OvirtClient(QWidget):
         req.add_header('Authorization', 'Basic ' + base64str)
         req.add_header('filter', 'true')
 
-        unverified_ctxt = SSLContext(PROTOCOL_TLSv1)
+        unverified_ctxt = SSLContext(PROTOCOL_TLS)
         tickethash = urllib.request.urlopen(req, context=unverified_ctxt).read()
         xmlcontent = ET.fromstring(tickethash)
 
@@ -368,7 +368,7 @@ class OvirtClient(QWidget):
         req.add_header('Accept', 'application/x-virt-viewer')
         req.add_header('filter', 'true')
 
-        unverified_ctxt = SSLContext(PROTOCOL_TLSv1)
+        unverified_ctxt = SSLContext(PROTOCOL_TLS)
         try:
             contents = urllib.request.urlopen(req, context=unverified_ctxt).read()
             if conf.CONFIG['fullscreen'] == '1':
