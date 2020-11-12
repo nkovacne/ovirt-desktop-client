@@ -9,8 +9,6 @@ This project is a simple oVirt-related desktop client. The application will comm
 
 This application is written in *PyQT5*, and has been verified to be working with oVirt version >= 4.0.0. It won't work with 3.6.0 versions of oVirt correctly.
 
-This project is also accessible from https://ovirt-desktop-client.click
-
 **Disclaimer**: This is an **unofficial** oVirt-related project. 
 
 ### Installation
