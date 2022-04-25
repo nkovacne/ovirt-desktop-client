@@ -249,6 +249,8 @@ class OvirtClient(QWidget):
             vmaction = _('shut_down')
         if vmstatus == 'down':
             vmaction = _('power_on')
+        if vmstatus == 'powering_down':
+            vmaction = _('force_off')
         return vmaction
 
     def toggle_action_text(self, vmstatus):
@@ -266,8 +268,42 @@ class OvirtClient(QWidget):
             rettxt += ' %s %s' % (_('click_to_action'), _('shut_down'))
         if vmstatus == 'down':
             rettxt += ' %s %s' % (_('click_to_action'), _('power_on'))
-
+        if vmstatus == 'powering_down':
+            rettxt += ' %s %s' % (_('click_to_action'), _('force_off'))
         return rettxt
+
+    def force_off_vm(self, rowid):
+        """
+            Description: If the user clicks on the force off button, we force the vm to power off.
+            This method shows a confirmation dialog and if accepted, it will be notified to oVirt.
+            Arguments: The row id that has been clicked. This relationship is stored using the VmData class.
+            Returns: Nothing
+        """
+
+        global conf
+
+        self.lastclick = int(time())         # Last click timestamp update
+
+        curvmstatus = self.vmdata[rowid].vmstatus
+        if curvmstatus == 'down':
+             QMessageBox.warning(None, _('apptitle') + ': ' + _('warning'), _('vm_not_powered_up'))
+             return
+
+        reply = QMessageBox.question(None, _('apptitle') + ': ' + _('confirm'), _('confirm_vm_force_off'), QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            try:
+                vms_service = conf.OVIRTCONN.vms_service()
+                vm = vms_service.list(search='id=%s' % (self.vmdata[rowid].vmid))[0]
+            except Error:
+                QMessageBox.critical(None, _('apptitle') + ': ' + _('error'), _('unexpected_connection_drop'))
+                quit()
+
+            try:
+                vm_service = vms_service.vm_service(id=self.vmdata[rowid].vmid)
+                vm_service.stop()
+                QMessageBox.information(None, _('apptitle') + ': ' + _('success'), _('force_off_vm'))
+            except Error:
+                QMessageBox.warning(None, _('apptitle') + ': ' + _('warning'), _('vm_in_unchangeable_status'))
 
     def change_status(self, rowid):
         """
@@ -283,7 +319,7 @@ class OvirtClient(QWidget):
         self.lastclick = int(time())         # Last click timestamp update
 
         curvmstatus = self.vmdata[rowid].vmstatus
-        if curvmstatus != 'up' and curvmstatus != 'down':
+        if curvmstatus != 'up' and curvmstatus != 'down' and curvmstatus != 'powering_down':
             QMessageBox.warning(None, _('apptitle') + ': ' + _('warning'), _('vm_in_unchangeable_status'))
             return
 
@@ -309,6 +345,13 @@ class OvirtClient(QWidget):
                     vm_service = vms_service.vm_service(id=self.vmdata[rowid].vmid)
                     vm_service.start()
                     QMessageBox.information(None, _('apptitle') + ': ' + _('success'), _('powering_up_vm'))
+                except Error:
+                    QMessageBox.warning(None, _('apptitle') + ': ' + _('warning'), _('vm_in_unchangeable_status'))
+            if curvmstatus == 'powering_down':
+                try:
+                    vm_service = vms_service.vm_service(id=self.vmdata[rowid].vmid)
+                    vm_service.stop()
+                    QMessageBox.information(None, _('apptitle') + ': ' + _('success'), _('force_off_vm'))
                 except Error:
                     QMessageBox.warning(None, _('apptitle') + ': ' + _('warning'), _('vm_in_unchangeable_status'))
 
@@ -593,11 +636,16 @@ class OvirtClient(QWidget):
             imageSticon = self.make_button(vmstatus, self.toggle_action_text(vmstatus))
             imageSticon.mousePressEvent = lambda x, r=row: self.change_status(r)
 
+            # Force off button.
+            imageOficon = self.make_button('force_off', _('force_off_tooltip'))
+            imageOficon.mousePressEvent = lambda x, r=row: self.force_off_vm(r)
+
             # Fill row with known info
             self.grid.addWidget(imageOsicon, row, 0)
             self.grid.addWidget(gridvmname, row, 1)
             self.grid.addWidget(imageSticon, row, 2)
             self.grid.addWidget(connect, row, 3)
+            self.grid.addWidget(imageOficon, row, 4)
 
             # Store the correspondence between row number <-> VM data
             vmd = VmData()
