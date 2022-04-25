@@ -201,6 +201,11 @@ msgstr "apagar"
 msgid "power_on"
 msgstr "encender"
 
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:253
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:272
+msgid "force_off"
+msgstr "forzar fuera"
+
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:244
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:271
 msgid "current_vm_status"
@@ -231,6 +236,10 @@ msgstr ""
 msgid "confirm_vm_status_change"
 msgstr "Por favor, confirme el cambio del estado de la máquina virtual a"
 
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:293
+msgid "confirm_vm_force_off"
+msgstr "Por favor, confirme que desea apagar por la fuerza la máquina virtual"
+
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:277
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:446
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:630
@@ -250,8 +259,17 @@ msgid "shutting_down_vm"
 msgstr "Apagando máquina..."
 
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:289
+msgid "vm_not_powered_up"
+msgstr "Máquina está apagado"
+
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:347
 msgid "powering_up_vm"
 msgstr "Encendiendo máquina..."
+
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:305
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:355
+msgid "force_off_vm"
+msgstr "Forzando la máquina ..."
 
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:359
 msgid "unexpected_request_error"

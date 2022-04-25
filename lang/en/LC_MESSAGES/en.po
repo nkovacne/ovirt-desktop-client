@@ -200,6 +200,11 @@ msgstr "shut down"
 msgid "power_on"
 msgstr "power on"
 
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:253
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:272
+msgid "force_off"
+msgstr "force off"
+
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:244
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:271
 msgid "current_vm_status"
@@ -230,6 +235,10 @@ msgstr ""
 msgid "confirm_vm_status_change"
 msgstr "Please, confirm virtual machine status change to"
 
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:293
+msgid "confirm_vm_force_off"
+msgstr "Please, confirm you want to forcibly power off the virtual machine"
+
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:277
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:446
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:630
@@ -249,8 +258,17 @@ msgid "shutting_down_vm"
 msgstr "Shutting down machine..."
 
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:289
+msgid "vm_not_powered_up"
+msgstr "VM is powered off"
+
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:347
 msgid "powering_up_vm"
 msgstr "Powering up machine..."
+
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:305
+#: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:355
+msgid "force_off_vm"
+msgstr "Forcing off machine..."
 
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:359
 msgid "unexpected_request_error"
@@ -321,6 +339,9 @@ msgstr "Connect to the virtual machine"
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:567
 msgid "viewer_already_opened"
 msgstr "Viewer for this machine is open now"
+
+msgid "force_off_tooltip"
+msgstr "Force off the virtual machine"
 
 #: /home/nico/ovirt_client/ovirt_client/ovirtclient.py:647
 msgid "total_machines"
