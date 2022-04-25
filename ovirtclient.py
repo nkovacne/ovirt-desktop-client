@@ -20,13 +20,13 @@ import configparser
 import urllib.request
 import threading
 from time import sleep, time
-from base64 import encodestring
+from base64 import encodebytes
 from xml.etree import cElementTree as ET
 from random import randint
 from subprocess import Popen
 from os import remove, access, X_OK
 from os.path import isfile
-from ssl import SSLContext, PROTOCOL_TLSv1
+from ssl import SSLContext, PROTOCOL_TLS
 from globalconf import *
 from credentials import Credentials
 from about import About
@@ -326,12 +326,11 @@ class OvirtClient(QWidget):
         global conf
 
         req = urllib.request.Request('%s/%s/%s/%s' % (conf.CONFIG['ovirturl'], 'vms', vmid, 'graphicsconsoles'))
-        # Python 2 -> 3 conversion: encodestring expects a byte-like string, not str
-        base64str = encodestring(('%s:%s' % (conf.USERNAME + '@' + conf.CONFIG['ovirtdomain'], conf.PASSWORD)).encode()).decode().replace('\n', '')
+        base64str = encodebytes(('%s:%s' % (conf.USERNAME + '@' + conf.CONFIG['ovirtdomain'], conf.PASSWORD)).encode('UTF-8')).decode('UTF-8').replace('\n', '')
         req.add_header('Authorization', 'Basic ' + base64str)
         req.add_header('filter', 'true')
 
-        unverified_ctxt = SSLContext(PROTOCOL_TLSv1)
+        unverified_ctxt = SSLContext(PROTOCOL_TLS)
         tickethash = urllib.request.urlopen(req, context=unverified_ctxt).read()
         xmlcontent = ET.fromstring(tickethash)
 
@@ -361,14 +360,13 @@ class OvirtClient(QWidget):
             return False
 
         req = urllib.request.Request('%s/%s/%s/%s/%s' % (conf.CONFIG['ovirturl'], 'vms', vmid, 'graphicsconsoles', ticket))
-        # Python 2 -> 3 conversion: encodestring expects a byte-like string, not str
-        base64str = encodestring(('%s:%s' % (conf.USERNAME + '@' + conf.CONFIG['ovirtdomain'], conf.PASSWORD)).encode()).decode().replace('\n', '')
+        base64str = encodebytes(('%s:%s' % (conf.USERNAME + '@' + conf.CONFIG['ovirtdomain'], conf.PASSWORD)).encode('UTF-8')).decode('UTF-8').replace('\n', '')
         req.add_header('Authorization', 'Basic ' + base64str)
         req.add_header('Content-Type', 'application/xml')
         req.add_header('Accept', 'application/x-virt-viewer')
         req.add_header('filter', 'true')
 
-        unverified_ctxt = SSLContext(PROTOCOL_TLSv1)
+        unverified_ctxt = SSLContext(PROTOCOL_TLS)
         try:
             contents = urllib.request.urlopen(req, context=unverified_ctxt).read()
             if conf.CONFIG['fullscreen'] == '1':
